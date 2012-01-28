@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+"""
+    jldwebscaper - scrape a web page for anchor links
+
+    Command Line:
+    
+        jldwebscraper [-p polling_interval] [-j] -s source_url
+        
+        OR
+        
+        jldwebscraper @config.txt
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="Scrapes a web page"
+DEFAULTS={
+          "polling_interval": 30
+          }
+
+def main():
+    try:
+        import jlddk.do_setup
+        import logging
+        import jlddk.do_checks
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser.add_argument('-s',  dest='source_url',   type=str, help="Source URL", required=True)
+        parser.add_argument('-j',  dest='format_json',  action="store_true", help="Output in JSON", default=False)
+        parser.add_argument('-e',  dest='propagate_error',  action="store_true", help="Propagate errors (JSON)", default=False)
+        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
+        args=parser.parse_args()
+        
+        from jlddk.script_webscraper import run
+        run(args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

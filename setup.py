@@ -12,21 +12,34 @@ __version__ ="0.1.0"
 from distutils.core import setup
 from setuptools import find_packages
 
+DESC="""
+Overview
+--------
 
-setup(name=         'jldzeromq',
+This package contains a collection of 'robots'.
+Each 'robot' is implemented with logging on stderr and processing result is output on stdout as either string or JSON.
+
+
+Configuration
+-------------
+
+Can be performed through options on the command line or using a file (use a leading `@`).
+"""
+
+setup(name=         'jlddk',
       version=      __version__,
-      description=  'Collection of ZeroMQ related tools',
+      description=  'Collection of robots',
       author=       __author__,
       author_email= 'jl@jldupont.com',
-      url=          'http://www.systemical.com/doc/opensource/jldzeromq',
+      url=          'http://www.systemical.com/doc/opensource/jlddk',
       package_dir=  {'': "src",},
       packages=     find_packages("src"),
-      scripts=      ['src/scripts/jld0sub',
-                     'src/scripts/jld0pub',  
+      scripts=      ['src/scripts/jldwebscraper',
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],
                       },
       include_package_data=True,                      
       zip_safe=False
+      ,long_description=DESC
       )

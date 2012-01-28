@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-    jldfilterlist - filters list elements from a JSON object stream
+    jldfilter - filters stdin through Python module, out to stdout
 
 
     See https://www.systemical.com/doc/opensource/jlddk  for more details
@@ -27,7 +27,7 @@ except:
 
 ########################################################################
 
-DESC="Filters JSON object stream"
+DESC="Filters stdin stream through Python function ==> stdout"
 DEFAULTS={
           
           }
@@ -40,12 +40,10 @@ def main():
         from jlddk.tools_sys import dnorm, info_dump
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-om',  dest='member',    type=str, help="Member of JSON object to filter on", required=True)
-        parser.add_argument('-in',  dest='inr',       nargs="+", type=str, help="Regex(es) for 'in' predicate", action="store")
-        parser.add_argument('-out', dest='outr',      nargs="+", type=str, help="Regex(es) for 'out' predicate", action="store")
-        parser.add_argument('-m',   dest="module",    type=str,  help="Python module with 'run' callable")
+        parser.add_argument('-m',   dest="module",    type=str,  help="Python module", required=True)
+        parser.add_argument('-f',   dest="function",  type=str,  help="Python function inside module", required=True)        
         parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
-        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"])        
+        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
         args=parser.parse_args()
         
         info_dump(vars(args), 20)

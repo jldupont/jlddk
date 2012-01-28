@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.0"
+__version__ ="0.1.1"
 
 
 from distutils.core import setup
@@ -18,7 +18,6 @@ Overview
 
 This package contains a collection of 'robots'.
 Each 'robot' is implemented with logging on stderr and processing result is output on stdout as either string or JSON.
-
 
 Configuration
 -------------
@@ -35,6 +34,7 @@ setup(name=         'jlddk',
       package_dir=  {'': "src",},
       packages=     find_packages("src"),
       scripts=      ['src/scripts/jldwebscraper',
+                     'src/scripts/jldfilter',
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],

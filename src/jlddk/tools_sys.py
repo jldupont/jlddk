@@ -24,7 +24,7 @@ def prepare_callable(module_name, function_name):
     if not callable(fnc):
         raise Exception("Can't call 'run' function of callable '%S'" % module_name)
     
-    return fnc
+    return (mod, fnc)
 
 
 def call(module_name, function_name, *pargs, **kargs):

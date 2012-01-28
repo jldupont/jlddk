@@ -1,2 +1,2 @@
--om "liste"
--in "^([a-zA-Z0-9\-_]+)\.zip$"
+-m string
+-f upper

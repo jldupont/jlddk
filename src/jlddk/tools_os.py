@@ -5,6 +5,14 @@
 import os, errno
 import subprocess
 
+def move(src_path, dst_path):
+    try:
+        os.rename(src_path, dst_path)
+        return ("ok", None)
+    except:
+        return ('error', None)
+
+
 def file_contents(path):
     """
     Simple "get file contents"

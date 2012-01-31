@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.2"
+__version__ ="0.1.3"
 
 
 from distutils.core import setup
@@ -36,6 +36,7 @@ setup(name=         'jlddk',
       scripts=      ['src/scripts/jldwebscraper',
                      'src/scripts/jldfilter',
                      'src/scripts/jldwebdl',
+                     'src/scripts/jldjsoncat',
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],

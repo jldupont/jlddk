@@ -5,6 +5,48 @@
 import os, errno
 import subprocess
 
+def file_contents(path):
+    """
+    Simple "get file contents"
+    """
+    try:
+        fh=open(path, "r")
+        return ('ok', fh.read())
+    except:
+        return ("error", None)
+    finally:
+        try:
+            fh.close()
+        except:
+            pass
+
+def quick_write(path, contents):
+    """
+    Best effort "write contents to file" 
+    
+    >>> quick_write("/tmp/QuickWriteTest", "{'param': 'value'}") # doctest:+ELLIPSIS
+    ('ok', ...)
+    >>> file_contents("/tmp/QuickWriteTest")
+    ('ok', "{'param': 'value'}")
+    >>> rm('/tmp/QuickWriteTest') # doctest:+ELLIPSIS
+    ('ok', ...)
+    """
+    try:
+        code, maybe_rpath=resolve_path(path)
+        if not code.startswith("ok"):
+            return (code, maybe_rpath) 
+        fh=open(maybe_rpath, "w")
+        fh.write(contents)
+        fh.close()
+        return ('ok', path)
+    except Exception, e:
+        return ("error", str(e))
+    finally:
+        try:
+            fh.close()
+        except:
+            pass
+
     
 def get_root_files(src_path):
     """
@@ -168,20 +210,6 @@ def simple_popen(path_script, env={}):
 
     
     
-def file_contents(path):
-    """
-    Simple "get file contents"
-    """
-    try:
-        fh=open(path, "r")
-        return ('ok', fh.read())
-    except:
-        return ("error", None)
-    finally:
-        try:
-            fh.close()
-        except:
-            pass
 
 if __name__=="__main__":
     import doctest

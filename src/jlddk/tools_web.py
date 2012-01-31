@@ -2,9 +2,26 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import urllib2
+import urllib2, os
 from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
+#from urlparse import urlparse
 
+def extract_url_filename(url):
+    """
+    >>> extract_url_filename("http://www.google.com/somepath/somearchive.tar.gz")
+    ('ok', ('somearchive.tar', '.gz'))
+    >>> extract_url_filename("http://www.google.com/somepath/somefile")
+    ('ok', ('somefile', ''))
+    """
+    try:
+        bn=os.path.basename(url)
+        base, ext=os.path.splitext(bn)
+        return ("ok", (base, ext))
+    except:
+        return ("error", url)
+    
+    
+    
 
 def parse(page):
     try:
@@ -23,8 +40,9 @@ def fetch(page):
     """
     https://gist.github.com/1691098
     
-    >> code, (code, headers, data)=fetch("http://www.google.com/googlebooks/uspto-patents-grants-biblio.html")
-    >> print headers   
+    >>> code, (http_code, headers, data)=fetch("http://www.google.com/googlebooks/uspto-patents-grants-biblio.html")
+    >>> print http_code
+    >>> print headers   
     {'x-xss-protection': '1; mode=block', 
     'x-content-type-options': 'nosniff', 
     'expires': 'Sat, 28 Jan 2012 01:46:44 GMT', 
@@ -62,33 +80,36 @@ def headers_to_dict(headers):
 def extract_anchors(soup):
     """
     >> status, (code, headers, data)=fetch("http://www.google.com/googlebooks/uspto-patents-grants-biblio.html")
-    >> soup=parse(data)
+    >> code, soup=parse(data)
     >> print extract_anchors(soup)
     
     """
     try:
-        return soup.findAll('a')
-    except:
-        return None
+        return ("ok", soup.findAll('a'))
+    except Exception, e:
+        return ("error", str(e))
 
 def extract_href(soup):
     """
-    >>> status, (code, headers, data)=fetch("http://www.google.com/googlebooks/uspto-patents-grants-biblio.html")
-    >>> soup=parse(data)
-    >>> extract_href(soup)
+    >> status, (code, headers, data)=fetch("http://www.google.com/googlebooks/uspto-patents-grants-biblio.html")
+    >> code, soup=parse(data)
+    >> extract_href(soup)
     
     """
     try:
-        anchors=extract_anchors(soup)
+        code, maybe_anchors=extract_anchors(soup)
+        if not code.startswith("ok"):
+            return (code, maybe_anchors)
+        
         result=[]
-        for anchor in anchors:
+        for anchor in maybe_anchors:
             href=anchor.get("href", None)
             if href is not None:
                 result.append(str(href))
             
         return ("ok", filter(is_http_href, result))
-    except:
-        return ("error", None)
+    except Exception, e:
+        return ("error", str(e))
 
 def f_extract_href((code, soup)):
     return extract_href(soup)

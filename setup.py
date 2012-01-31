@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-    Jean-Lou Dupont's ZeroMQ scripts
+    Jean-Lou Dupont's general web related scripts/robots
     
     Created on 2012-01-19
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.1"
+__version__ ="0.1.2"
 
 
 from distutils.core import setup
@@ -35,6 +35,7 @@ setup(name=         'jlddk',
       packages=     find_packages("src"),
       scripts=      ['src/scripts/jldwebscraper',
                      'src/scripts/jldfilter',
+                     'src/scripts/jldwebdl',
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],

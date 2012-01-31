@@ -35,8 +35,10 @@ def main():
         parser.add_argument('-sp',  dest='source_path',  type=str, help="Source path", required=True)
         parser.add_argument('-dp',  dest='dest_path',    type=str, help="Destination path", required=True)
         
+        parser.add_argument('-dfe', dest="delete_fetch_error", action="store_true", help="Delete source file if url can't be fetched", default=False)
+        
         parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
-        parser.add_argument('-bs', dest="batch_size", type=int, action="store", help="Maximum batch size per polling interval", default=DEFAULTS["polling_interval"], default=DEFAULTS["batch_size"])
+        parser.add_argument('-bs', dest="batch_size", type=int, action="store", help="Maximum batch size per polling interval", default=DEFAULTS["batch_size"])
         parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
         parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
                 

@@ -27,6 +27,8 @@ def run(module=None, function=None, loglevel="info", logconfig=None):
 
         try:
             oline=fnc(iline)
+        except KeyboardInterrupt:
+            raise
         except Exception, e:
             try:    logging.error("Error processing '%s' : %s" % (iline[:20], str(e)))
             except: pass

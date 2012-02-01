@@ -78,7 +78,8 @@ def run(source_path=None, move_path=None, batch_size=5, loglevel="info", logconf
                 if not code.startswith("ok"):
                     to_skip.append(src_file)
                     logging.warning("Problem processing file '%s': %s" % (src_file, maybe_error))
-                
+        except KeyboardInterrupt:
+            raise
         except Exception, e:
             logging.error("processing file '%s': %s" % (src_file, str(e)))
         ###############################################################            

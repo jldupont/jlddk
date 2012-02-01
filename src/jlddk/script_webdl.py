@@ -5,7 +5,7 @@
 import logging, sys, os, uuid, json
 from time import sleep
 from tools_os import mkdir_p, get_root_files, file_contents, quick_write
-from tools_os import rm, can_write
+from tools_os import rm, can_write, atomic_write
 from tools_logging import setloglevel
 from tools_web import fetch, extract_url_filename
 
@@ -77,7 +77,7 @@ def process(src_file, dest_path, delete_fetch_error):
     code, (http_code, headers, data)=fetch(url)
     if not code.startswith("ok"):
         if delete_fetch_error:
-            code, msg=rm(src_file)
+            code, _msg=rm(src_file)
             logging.warning("Attempting to delete source file '%s': %s" % (src_file, code))
         raise Exception("Can't fetch page from url: %s" % url)
 
@@ -103,7 +103,7 @@ def process(src_file, dest_path, delete_fetch_error):
         fbn=str(uuid.uuid1())
         dest_filename=os.path.join(dest_path, fbn)
         
-    code, msg=quick_write(dest_filename, data)
+    code, msg=atomic_write(dest_filename, data)
     if not code.startswith("ok"):
         raise Exception("Can't write to file '%s': %s" % (dest_filename, msg))
     

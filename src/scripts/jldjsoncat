@@ -34,6 +34,7 @@ def main():
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-sp',  dest='source_path',  type=str, help="Source path", required=True)
         parser.add_argument('-mp',  dest='move_path',    type=str, help="Move path")
+        parser.add_argument('-cp',  dest='check_path',    type=str, help="Check path")
         
         parser.add_argument('-ds',  dest="enable_delete", action="store_true", help="Delete source file when finished streaming", default=False)
         

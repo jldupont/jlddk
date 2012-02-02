@@ -8,9 +8,14 @@ from tools_os import mkdir_p, get_root_files, file_contents, quick_write
 from tools_os import rm, can_write, atomic_write
 from tools_logging import setloglevel
 from tools_web import fetch, extract_url_filename
+from tools_func import check_transition
 
 
-def run(source_path=None, dest_path=None, batch_size=5, loglevel="info", logconfig=None, polling_interval=None, delete_fetch_error=False):
+def run(source_path=None, dest_path=None, check_path=None, 
+        batch_size=5, loglevel="info", logconfig=None, polling_interval=None, delete_fetch_error=False):
+    
+    if check_path is not None:
+        ct=check_transition()
     
     if logconfig is not None:
         logging.config.fileConfig(logconfig)
@@ -26,30 +31,44 @@ def run(source_path=None, dest_path=None, batch_size=5, loglevel="info", logconf
     logging.info("Starting loop...")
     while True:
         
-        code, files=get_root_files(source_path)
-        if not code.startswith("ok"):
-            logging.error("Can't get root files from %s" % source_path)
-            continue
-        
-        ###############################################################
-        files=files[:batch_size]
-        try:
-            for src_file in files:
-                
-                if src_file in to_skip:
-                    continue
-                
-                code, _=can_write(src_file)
-                if not code.startswith("ok"):
-                    to_skip.append(src_file)
-                    logging.error("Would not be able to delete source file '%s'... skipping download" % src_file)
-                    continue
-                
-                process(src_file, dest_path, delete_fetch_error)
-                
-        except Exception, e:
-            logging.error("processing file '%s': %s" % (src_file, str(e)))
-        ###############################################################            
+        if check_path is not None:
+            try:    exists=os.path.exists(check_path)
+            except: exists=False
+            
+            maybe_tr, _=ct.send(exists)
+            if maybe_tr=="tr" and exists:
+                logging.info("Check path: passed")
+            if maybe_tr=="tr" and not exists:
+                logging.info("Check path: failed - skipping")
+        else:
+            ## fake 'exists'
+            exists=True
+
+        if exists:        
+            code, files=get_root_files(source_path)
+            if not code.startswith("ok"):
+                logging.error("Can't get root files from %s" % source_path)
+                continue
+            
+            ###############################################################
+            files=files[:batch_size]
+            try:
+                for src_file in files:
+                    
+                    if src_file in to_skip:
+                        continue
+                    
+                    code, _=can_write(src_file)
+                    if not code.startswith("ok"):
+                        to_skip.append(src_file)
+                        logging.error("Would not be able to delete source file '%s'... skipping download" % src_file)
+                        continue
+                    
+                    process(src_file, dest_path, delete_fetch_error)
+                    
+            except Exception, e:
+                logging.error("processing file '%s': %s" % (src_file, str(e)))
+            ###############################################################            
         
         
         logging.debug("...sleeping for %s seconds" % polling_interval)

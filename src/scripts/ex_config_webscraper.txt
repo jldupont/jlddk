@@ -1,3 +1,6 @@
--s http://www.google.com/googlebooks/uspto-patents-grants-biblio.html
+-cp
+/tmp/am_leader
+-su
+http://www.google.com/googlebooks/uspto-patents-grants-biblio.html
 -j
 -e

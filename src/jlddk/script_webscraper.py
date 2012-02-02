@@ -2,35 +2,45 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import logging
+import logging, os
 from time import sleep
 from tools_web import fetch, parse, f_extract_href
-from tools_func import coroutine
-from tools_sys import json_string, stdout, info_dump
+from tools_func import coroutine, check_transition
+from tools_sys import json_string, stdout
 
-def run(args):
-    
-    ## shortcuts
-    polling_interval=args.polling_interval
-    source_url=args.source_url.strip()
-    format_json=args.format_json
-    propagate_error=args.propagate_error
-    
-    info_dump(vars(args), 20)
+def run(polling_interval=None, source_url=None, format_json=None, propagate_error=None, check_path=None):
     
     proc=process(source_url, propagate_error, format_json)
+    
+    if check_path is not None:
+        ct=check_transition()
     
     logging.info("Starting loop...")
     while True:
         
-        #########################################################
-        status, (code, headers, data)=fetch(source_url)
-        if status.startswith("ok"):
-            proc.send((code, headers, data))
+        if check_path is not None:
+            try:    exists=os.path.exists(check_path)
+            except: exists=False
+            
+            maybe_tr, _=ct.send(exists)
+            if maybe_tr=="tr" and exists:
+                logging.info("Check path: passed")
+            if maybe_tr=="tr" and not exists:
+                logging.info("Check path: failed - skipping")
         else:
-            if propagate_error:
-                stdout('''{"status":"error", "kind":"fetch", "source_url":"%s", "http_code":"%s"}''' % (source_url, code))
-        #########################################################
+            ## fake 'exists'
+            exists=True
+                
+
+        if exists:            
+            #########################################################
+            status, (code, headers, data)=fetch(source_url)
+            if status.startswith("ok"):
+                proc.send((code, headers, data))
+            else:
+                if propagate_error:
+                    stdout('''{"status":"error", "kind":"fetch", "source_url":"%s", "http_code":"%s"}''' % (source_url, code))
+            #########################################################
 
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
@@ -87,6 +97,3 @@ def process_l3(source_url, propagate_error, format_json):
                 for href in hrefs:
                     stdout(href)
                 
-        
-
-

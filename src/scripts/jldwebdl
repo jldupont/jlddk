@@ -34,6 +34,7 @@ def main():
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-sp',  dest='source_path',  type=str, help="Source path", required=True)
         parser.add_argument('-dp',  dest='dest_path',    type=str, help="Destination path", required=True)
+        parser.add_argument('-cp',  dest='check_path',    type=str, help="Check path")
         
         parser.add_argument('-dfe', dest="delete_fetch_error", action="store_true", help="Delete source file if url can't be fetched", default=False)
         

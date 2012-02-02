@@ -1,0 +1,7 @@
+-cp
+/tmp/am_leader
+-sp
+/tmp/test
+-ds
+-p
+5

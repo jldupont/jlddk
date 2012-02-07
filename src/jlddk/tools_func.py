@@ -10,7 +10,6 @@ def coroutine(func):
         cr=func(*args, **kwargs)
         cr.next()
         return cr
-    start.__name__=func.__name__
     return start
 
 

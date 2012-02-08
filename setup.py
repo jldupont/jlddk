@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.4"
+__version__ ="0.1.5"
 
 
 from distutils.core import setup
@@ -37,11 +37,13 @@ setup(name=         'jlddk',
                      'src/scripts/jldfilter',
                      'src/scripts/jldwebdl',
                      'src/scripts/jldjsoncat',
+                     'src/scripts/jldcomp',
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],
                       },
       include_package_data=True,                      
       zip_safe=False
+      ,install_requires=["pyfnc >= 0.1.0"]
       ,long_description=DESC
       )

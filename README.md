@@ -4,6 +4,11 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.5 :
+
+* Added 'jldcomp' script
+* New dependency : 'pyfnc' package
+
 0.1.4 : 
 
 * Updated 'jldwebdl' to use 'atomic_write' for creating the destination file(s)

@@ -19,6 +19,15 @@ Overview
 This package contains a collection of 'robots'.
 Each 'robot' is implemented with logging on stderr and processing result is output on stdout as either string or JSON.
 
+Robots
+------
+
+* jldwebscraper : extract anchor links from a web page
+* jldfilter : filter stdin through a Python module, output on stdout
+* jldcomp : compare 2 filesystem paths for difference in files
+* jldjsoncat : 'cat' files to stdin by encapsulating them in JSON objects
+* jldwebdl : gated web page download, source links contained in file system path
+
 Configuration
 -------------
 
@@ -38,11 +47,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldwebdl',
                      'src/scripts/jldjsoncat',
                      'src/scripts/jldcomp',
-                     ],
-      package_data = {
-                      '':[ "*.gif", "*.png", "*.jpg" ],
-                      },
-      include_package_data=True,                      
+                     ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"]
       ,long_description=DESC

@@ -35,7 +35,8 @@ def atomic_write(path, contents):
     Create temporary file and then move/rename to specified path.
     Rename operation in the same filesystem are atomic (at least in Linux).
     
-    >>> atomic_write("/tmp/_jlddk_atomic_write", "test!")
+    >>> atomic_write("/tmp/_jlddk_atomic_write", "test!") ## doctest: +ELLIPSIS
+    ('ok', ...
     """
     fd, tfn=tempfile.mkstemp()
     
@@ -87,10 +88,12 @@ def quick_write(path, contents):
             pass
 
     
-def get_root_files(src_path):
+def get_root_files(src_path, strip_dirname=False):
     """
     Retrieve files from the root of src_path
     >>> get_root_files("/tmp")
+    
+    >>> get_root_files("/tmp", strip_dirname=True)
     
     """
     def add_src_path(p):
@@ -100,6 +103,9 @@ def get_root_files(src_path):
         liste=os.listdir(src_path)
         liste=map(add_src_path, liste)        
         liste=filter(os.path.isfile, liste)
+        
+        if strip_dirname:
+            liste=map(os.path.basename, liste)
      
         return ("ok", liste)
     except:

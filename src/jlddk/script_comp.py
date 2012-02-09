@@ -7,19 +7,20 @@ from time import sleep
 from tools_os import get_root_files, file_contents
 from tools_os import rm, can_write, resolve_path
 from tools_logging import setloglevel
-from tools_func import check_transition, coroutine, doOnTransition
+from tools_func import check_transition, coroutine, doOnTransition, transition_manager
 from tools_misc import check_if_ok
 
-from pyfnc import patterned, pattern
+from pyfnc import patterned, pattern, partial
+
+def ilog(path):
+    logging.info("Files accessible on path: %s" % path)
+    
+def wlog(path):
+    logging.warning("Can't retrieve files from path: %s" % path)
 
 def stdout(jo):
     try:    sys.stdout.write(json.dumps(jo)+"\n")
     except: pass
-
-def maybe_get_status(filepath):
-    if filepath:
-        return file_contents(filepath)
-    return ("ok", None)
 
 def run(primary_path=None, compare_path=None, status_filename=None
         ,wait_status=None, polling_interval=None
@@ -44,11 +45,22 @@ def run(primary_path=None, compare_path=None, status_filename=None
     else: 
         status_path=None
 
+    ### context for logging etc.
     ctx={
          "pp": primary_path
          ,"cp": compare_path
          ,"sp": status_path
+         
+         ,"pp_log" :{"up":    partial(ilog, primary_path)
+                     ,"down":  partial(wlog, primary_path)
+                     }
+         ,"cp_log" :{"up":    partial(ilog, compare_path)
+                     ,"down":  partial(wlog, compare_path)
+                     }
          }
+
+    ctx["tm"]=transition_manager(ctx)
+            
             
     logging.info("Starting loop...")
     while True:
@@ -67,6 +79,34 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path):
     ### log rate limiter helper -- need to update status in context 'ctx'
     doOnTransition(ctx, "status_file.contents", "down", True, None)
     
+    codep, primary_files=get_root_files(primary_path, strip_dirname=True)
+    codec, compare_files=get_root_files(compare_path, strip_dirname=True)
+    
+    ### output some log info on transitions
+    tm=ctx["tm"]
+    tm.send(("pp_log", codep=="ok"))
+    tm.send(("cp_log", codec=="ok"))
+    
+    ### not much to do if either path isn't accessible...
+    if not codep.startswith("ok") or not codec.startswith("ok"):
+        return
+    
+    try:
+        setpf=set(primary_files)
+        setcf=set(compare_files)
+        common=setpf.intersection(setcf)
+        
+        diff={
+               "pp": primary_path
+              ,"cp": compare_path
+              ,"pp-cp":  list(setpf-setcf)
+              ,"cp-pp": list(setcf-setpf)
+              ,"common": list(common)
+              }
+        
+        stdout(diff)
+    except Exception, e:
+        logging.error("Can't compute diff between paths: %s" % str(e))
 
 @pattern(dict, any, str, any, any)
 def maybe_process_nok(ctx, _nok, msg, _x, _y):
@@ -78,7 +118,6 @@ def maybe_process_nok(ctx, _nok, msg, _x, _y):
          
     doOnTransition(ctx, "status_file.contents", "down", False, wlog)
 
-    
 
 @patterned
 def maybe_process(ctx, code, msg, primary_path, compare_path): pass

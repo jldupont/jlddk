@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.8"
+__version__ ="0.1.9"
 
 
 from distutils.core import setup
@@ -27,6 +27,7 @@ Robots
 * jldcomp : compare 2 filesystem paths for difference in files
 * jldjsoncat : 'cat' files to stdin by encapsulating them in JSON objects
 * jldwebdl : gated web page download, source links contained in file system path
+* jldinotify : path change notification over JSON/stdout
 
 Configuration
 -------------
@@ -47,8 +48,11 @@ setup(name=         'jlddk',
                      'src/scripts/jldwebdl',
                      'src/scripts/jldjsoncat',
                      'src/scripts/jldcomp',
+                     'src/scripts/jldinotify',
                      ],                     
       zip_safe=False
-      ,install_requires=["pyfnc >= 0.1.0"]
+      ,install_requires=["pyfnc >= 0.1.0"
+                         ,"pyinotify"
+                         ]
       ,long_description=DESC
       )

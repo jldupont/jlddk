@@ -4,6 +4,11 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.9 :
+
+* fixed 'lc' option present in most scripts
+* added 'jldinotify'
+
 0.1.8 : added parameters & better error handling to jldfilter 
 
 0.1.7 : added stdout.flush() to jldwebscraper

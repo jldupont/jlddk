@@ -2,7 +2,8 @@
     Created on 2012-02-08
     @author: jldupont
 """
-import json
+from time import sleep
+import json, logging
 from tools_os import file_contents
 
 from pyfnc import patterned, pattern
@@ -91,6 +92,41 @@ def check_nok(code, msg):
 
 @patterned
 def checkok(code, maybe_contents): pass
+
+
+def retry(f, always=True, min_wait=1, max_wait=30, max_retries=10, logmsg=None):
+    """
+    Retries function 'f' : the function should throw an exception to indicate failure 
+    
+    :param always: boolean, should always retry true/false
+    :param min_wait: int, minimum seconds between tries
+    :param max_wait: int, maximum seconds before restarting cycle
+    :param max_retries: int, maximum number of retries when 'always==False'
+    
+    @raise KeyboardInterrupt
+    @return f()
+    """
+    showed_msg=False
+    wait=min_wait
+    retry_count=max_retries
+    while True:
+        try:
+            return f()
+        except KeyboardInterrupt:
+            raise
+        except Exception, exp:   
+            if not showed_msg:
+                showed_msg=True
+                if logmsg is not None:
+                    logging.warning(logmsg)     
+            retry_count=max(retry_count-1, 0)
+            if not always and retry_count==0:
+                raise exp
+            
+        sleep(wait)
+        
+        wait=wait*2
+        wait=wait if wait<max_wait else min_wait
 
 
 if __name__=="__main__":

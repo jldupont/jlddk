@@ -41,7 +41,7 @@ def main():
         parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
         parser.add_argument('-bs', dest="batch_size", type=int, action="store", help="Maximum batch size per polling interval", default=DEFAULTS["batch_size"])
         
-        parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
+        parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file")
         parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
                 
         args=parser.parse_args()

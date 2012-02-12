@@ -40,8 +40,10 @@ def main():
         from jlddk.tools_sys import dnorm, info_dump
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-m',   dest="module",    type=str,  help="Python module", required=True)
-        parser.add_argument('-f',   dest="function",  type=str,  help="Python function inside module", required=True)        
+        parser.add_argument('-m',   dest="module",        type=str,  help="Python module", required=True)
+        parser.add_argument('-f',   dest="function",      type=str,  help="Python function inside module", required=True)
+        parser.add_argument('-a',   dest="function_args", nargs='+', help="Arguments to function inside module", default=[])
+        
         parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
         parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
         args=parser.parse_args()

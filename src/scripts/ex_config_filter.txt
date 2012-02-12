@@ -1,2 +1,5 @@
--m string
--f upper
+-m jlddk.tools_misc
+-f debug
+-a
+param1
+param2

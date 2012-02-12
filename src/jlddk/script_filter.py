@@ -7,7 +7,7 @@ from tools_sys import prepare_callable
 from tools_logging import setloglevel
 
 
-def run(module=None, function=None, loglevel="info", logconfig=None):
+def run(module=None, function=None, function_args=None, loglevel="info", logconfig=None):
     
     if logconfig is not None:
         logging.config.fileConfig(logconfig)
@@ -26,11 +26,15 @@ def run(module=None, function=None, loglevel="info", logconfig=None):
         iline=sys.stdin.readline()
 
         try:
-            oline=fnc(iline)
+            oline=fnc(iline, *function_args)
         except KeyboardInterrupt:
             raise
         except Exception, e:
             try:    logging.error("Error processing '%s' : %s" % (iline[:20], str(e)))
             except: pass
             
-        sys.stdout.write(oline)
+        try:
+            sys.stdout.write(oline)
+        except:
+            sys.stdout.write(str(oline)+"\n")
+

@@ -7,6 +7,9 @@ from tools_os import file_contents
 
 from pyfnc import patterned, pattern
 
+def debug(*p):
+    print p
+    return p[0]
 
 def batch(l, size):
     """

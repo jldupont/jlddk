@@ -7,10 +7,15 @@ from time import sleep
 from tools_web import fetch, parse, f_extract_href
 from tools_func import coroutine, check_transition
 from tools_sys import json_string, stdout
+from tools_misc import batch
 
-def run(polling_interval=None, source_url=None, format_json=None, propagate_error=None, check_path=None):
+from pyfnc import dic, liste
+
+def run(polling_interval=None, source_url=None, 
+        batch_size=None,
+        format_json=None, propagate_error=None, check_path=None):
     
-    proc=process(source_url, propagate_error, format_json)
+    proc=process(source_url, propagate_error, format_json, batch_size)
     
     if check_path is not None:
         ct=check_transition()
@@ -47,12 +52,12 @@ def run(polling_interval=None, source_url=None, format_json=None, propagate_erro
         
         
 @coroutine
-def process(source_url, propagate_error, format_json):
+def process(source_url, propagate_error, format_json, batch_size):
     
     last_modified=None
     last_etag=None
 
-    proc_l2=process_l2(source_url, propagate_error, format_json)
+    proc_l2=process_l2(source_url, propagate_error, format_json, batch_size)
     
     while True:
         code, headers, data=(yield)
@@ -66,9 +71,9 @@ def process(source_url, propagate_error, format_json):
         last_etag=this_etag
         
 @coroutine
-def process_l2(source_url, propagate_error, format_json):
+def process_l2(source_url, propagate_error, format_json, batch_size):
     
-    proc_l3=process_l3(source_url, propagate_error, format_json)
+    proc_l3=process_l3(source_url, propagate_error, format_json, batch_size)
     
     while True:
         http_code, headers, data=(yield)
@@ -77,23 +82,26 @@ def process_l2(source_url, propagate_error, format_json):
         proc_l3.send(( (http_code, headers), (code_extract, hrefs) ))
 
 @coroutine
-def process_l3(source_url, propagate_error, format_json):
+def process_l3(source_url, propagate_error, format_json, batch_size):
     
     while True:
         ( (http_code, headers), (code_extract, hrefs) )=(yield)
         
-        d={"source_url": source_url
+        based={"source_url": source_url
            ,"http_status": http_code
            ,"etag": headers.get("etag", None)
            ,"last-modified": headers.get("last-modified", None)
            ,"extract_status": code_extract
-           ,"hrefs": hrefs
            }
-        
-        if format_json:
-            stdout(json_string(d))
-        else:
-            if hrefs is not None:
-                for href in hrefs:
-                    stdout(href)
+
+        for hrefs in batch(hrefs, batch_size):
+            
+            d=dic(based).update({"hrefs": hrefs})
+                
+            if format_json:
+                stdout(json_string(d))
+            else:
+                if hrefs is not None:
+                    for href in hrefs:
+                        stdout(href)
                 

@@ -8,6 +8,26 @@ from tools_os import file_contents
 from pyfnc import patterned, pattern
 
 
+def batch(l, size):
+    """
+    >>> for b in batch([1,2,3,4,5,6], 2): print b
+    [1, 2]
+    [3, 4]
+    [5, 6]
+    >>> for b in batch([1], 2): print b
+    [1]
+    >>> for b in batch([], 2): print b
+    """
+    index=0
+    while True:
+        sub=l[index:index+size]
+        index=index+size
+        if len(sub)==0:
+            break
+        
+        yield sub
+        
+
 
 def check_if_ok(filepath, default="ok"):
     """

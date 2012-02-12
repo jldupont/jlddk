@@ -4,6 +4,10 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.6 :
+
+* Added 'batch size' option to jldwebscraper (having problems with stdout buffering)
+
 0.1.5 :
 
 * Added 'jldcomp' script

@@ -91,6 +91,8 @@ def info_dump(d, align):
 def stdout(s):
     sys.stdout.write(s+"\n")
 
+def stdout_flush():
+    sys.stdout.flush()
 
 def json_string(o):
     try:

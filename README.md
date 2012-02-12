@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.7 : added stdout.flush() to jldwebscraper
+
 0.1.6 :
 
 * Added 'batch size' option to jldwebscraper (having problems with stdout buffering)

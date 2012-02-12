@@ -6,7 +6,7 @@ import logging, os
 from time import sleep
 from tools_web import fetch, parse, f_extract_href
 from tools_func import coroutine, check_transition
-from tools_sys import json_string, stdout
+from tools_sys import json_string, stdout, stdout_flush
 from tools_misc import batch
 
 from pyfnc import dic, liste
@@ -104,4 +104,7 @@ def process_l3(source_url, propagate_error, format_json, batch_size):
                 if hrefs is not None:
                     for href in hrefs:
                         stdout(href)
+                        
+        stdout_flush()
+        
                 

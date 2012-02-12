@@ -4,10 +4,10 @@
 """
 import logging, sys, json, os
 from time import sleep
-from tools_os import get_root_files, file_contents
-from tools_os import rm, can_write, resolve_path
+from tools_os import get_root_files
+from tools_os import resolve_path
 from tools_logging import setloglevel
-from tools_func import check_transition, coroutine, doOnTransition, transition_manager
+from tools_func import doOnTransition, transition_manager
 from tools_misc import check_if_ok
 
 from pyfnc import patterned, pattern, partial
@@ -18,6 +18,9 @@ def ilog(path):
 def wlog(path):
     logging.warning("Can't retrieve files from path: %s" % path)
 
+def stdoutf():
+    sys.stdout.flush()
+    
 def stdout(jo):
     try:    sys.stdout.write(json.dumps(jo)+"\n")
     except: pass
@@ -97,14 +100,15 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path):
         common=setpf.intersection(setcf)
         
         diff={
-               "pp": primary_path
-              ,"cp": compare_path
+               "pp":     primary_path
+              ,"cp":     compare_path
               ,"pp-cp":  list(setpf-setcf)
-              ,"cp-pp": list(setcf-setpf)
+              ,"cp-pp":  list(setcf-setpf)
               ,"common": list(common)
               }
         
         stdout(diff)
+        stdoutf()
     except Exception, e:
         logging.error("Can't compute diff between paths: %s" % str(e))
 

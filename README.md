@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.10 : removed output buffering on stdout
+
 0.1.9 :
 
 * fixed 'lc' option present in most scripts

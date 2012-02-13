@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-    jldinotify - path change notification over json/stdout
+    jldfetcher - download web page given details from stdin
 
     @author: Jean-Lou Dupont
 """
@@ -18,7 +18,7 @@ except:
 
 ########################################################################
 
-DESC="Path change notification over JSON/stdout"
+DESC="Download web pages given details from stdin"
 DEFAULTS={
           }
 
@@ -30,7 +30,7 @@ def main():
         from jlddk.tools_sys import info_dump, dnorm
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-sp',  dest='path_source',  type=str, help="Source path", required=True)
+        parser.add_argument('-dp',  dest='dest_path',    type=str, help="Destination path", default=None)
         
         parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file")
         parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
@@ -39,7 +39,7 @@ def main():
         
         info_dump(vars(args), 20)
         
-        from jlddk.script_inotify import run
+        from jlddk.script_fetcher import run
         run(**dnorm(vars(args)))
 
     except KeyboardInterrupt:

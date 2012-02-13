@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.10"
+__version__ ="0.1.11"
 
 
 from distutils.core import setup
@@ -28,6 +28,7 @@ Robots
 * jldjsoncat : 'cat' files to stdin by encapsulating them in JSON objects
 * jldwebdl : gated web page download, source links contained in file system path
 * jldinotify : path change notification over JSON/stdout
+* jldfetcher : web page fetcher which takes instructions from stdin
 
 Configuration
 -------------
@@ -49,6 +50,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldjsoncat',
                      'src/scripts/jldcomp',
                      'src/scripts/jldinotify',
+                     'src/scripts/jldfetcher',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

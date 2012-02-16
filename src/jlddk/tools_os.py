@@ -2,8 +2,10 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import os, errno, tempfile
+import os, errno, tempfile, types
 import subprocess
+
+from pyfnc import patterned, pattern
 
 def move(src_path, dst_path):
     try:
@@ -87,13 +89,64 @@ def quick_write(path, contents):
         except:
             pass
 
+
+@pattern(str, None, list)
+def filter_files_by_ext_NL(criteria, extlist, files):
+    return files
+
+@pattern(str, None, types.TupleType)
+def filter_files_by_ext_NA(criteria, extlist, (code, maybe_list)):
+    if not code.startswith("ok"):
+        return []
+    return maybe_list
+
+
+@pattern(str, list, types.TupleType)
+def filter_files_by_ext_tup(criteria, extlist, (code, maybe_list)):
+    if not code.startswith("ok"):
+        return []
+    
+    return filter_files_by_ext(criteria, extlist, maybe_list)
+
+
+@pattern("include", list, list)
+def filter_files_by_ext_inc(criteria, extlist, files):
+    
+    def inf(path):
+        _root, ext=os.path.splitext(path)
+        return ext in extlist
+    
+    return filter(inf, files)
+
+@pattern("exclude", list, list)
+def filter_files_by_ext_exc(criteria, extlist, files):
+
+    def exf(path):
+        _root, ext=os.path.splitext(path)
+        return not ext in extlist
+    
+    return filter(exf, files)
+
+@patterned
+def filter_files_by_ext(criteria, extlist, files):
+    """
+    >>> filter_files_by_ext("include", [".json"], ["a.json", "b.json", "c.py"])
+    ['a.json', 'b.json']
+    >>> filter_files_by_ext("exclude", [".json"], ["a.json", "b.json", "c.py"])
+    ['c.py']
+    >>> filter_files_by_ext("include", [".json"], ("ok", ["a.json", "b.json", "c.py"]))
+    ['a.json', 'b.json']
+    >>> filter_files_by_ext("exclude", [".json"], ("error", None))
+    []
+    """
+
     
 def get_root_files(src_path, strip_dirname=False):
     """
     Retrieve files from the root of src_path
-    >>> get_root_files("/tmp")
+    >> get_root_files("/tmp")
     
-    >>> get_root_files("/tmp", strip_dirname=True)
+    >> get_root_files("/tmp", strip_dirname=True)
     
     """
     def add_src_path(p):

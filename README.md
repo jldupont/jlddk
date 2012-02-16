@@ -4,6 +4,11 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.12 :
+
+* added "jldfilelist"
+
+
 0.1.11 :
 
 * added 'jldfetcher'

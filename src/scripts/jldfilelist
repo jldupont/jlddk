@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+"""
+    jldfilelist - list files using filters
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="List files using filters"
+DEFAULTS={
+          "polling_interval": 30
+          ,"batch_size": 16
+          }
+
+def main():
+    try:
+        import jlddk.do_setup
+        import logging
+        import jlddk.do_checks
+        from jlddk.tools_sys import info_dump, dnorm
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        
+        parser.add_argument('-sp',  dest='path_source',  type=str, help="Source path", required=True)
+        
+        parser.add_argument('-ei',  dest='ext_include',  nargs="+", type=str, help="Include extensions")
+        parser.add_argument('-ee',  dest='ext_exclude',  nargs="+", type=str, help="Exclude extensions")
+        
+        parser.add_argument('-bs',  dest='batch_size',   type=int, help="Batch size", default=DEFAULTS["batch_size"])
+        
+        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
+                
+        args=parser.parse_args()
+        
+        info_dump(vars(args), 20)
+        
+        from jlddk.script_filelist import run
+        run(**dnorm(vars(args)))
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

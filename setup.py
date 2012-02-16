@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.11"
+__version__ ="0.1.12"
 
 
 from distutils.core import setup
@@ -29,6 +29,7 @@ Robots
 * jldwebdl : gated web page download, source links contained in file system path
 * jldinotify : path change notification over JSON/stdout
 * jldfetcher : web page fetcher which takes instructions from stdin
+* jldfilelist : list path files using include/exclude filter, JSON/stdout output
 
 Configuration
 -------------
@@ -51,6 +52,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldcomp',
                      'src/scripts/jldinotify',
                      'src/scripts/jldfetcher',
+                     'src/scripts/jldfilelist',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

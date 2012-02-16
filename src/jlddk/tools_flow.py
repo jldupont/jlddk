@@ -13,34 +13,37 @@ def build_pipeline(blocks):
     
     :param blocks: a list of python modules with a 'run' function, order must be from head to tail
     
+        (mod, config_params)
+    
     Run function must have this signature:
     
-        run(nxt_handler, (context, msg))
+        run(params, nxt_handler, (context, msg))
         
     The 'tail' of the pipeline will be receiving None for 'nxt_handler' parameter. 
     """
     pipe=None
     rblocks=reversed(blocks)   
-    for mod in rblocks:
+    for block in rblocks:
+        mod, params=block
         try:
             run=getattr(mod, "run")
         except:
             raise Exception("Can't find 'run' function in module '%s'" % str(mod))
         if pipe is None:
-            pipe=_processor((None, run))
+            pipe=_processor((None, run, params))
         else:
-            pipe=_processor((pipe, run))
+            pipe=_processor((pipe, run, params))
     return pipe
 
 
 
-def _processor((nxt, run)):
+def _processor((nxt, run, params)):
 
     def loop():
         try:
             while True:
                 ctx, msg=(yield)
-                msg=run(nxt, (ctx, msg))
+                msg=run(params, nxt, (ctx, msg))
                 if msg is not None:
                     nxt.send(msg)
                     

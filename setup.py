@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.12"
+__version__ ="0.1.13"
 
 
 from distutils.core import setup
@@ -30,6 +30,7 @@ Robots
 * jldinotify : path change notification over JSON/stdout
 * jldfetcher : web page fetcher which takes instructions from stdin
 * jldfilelist : list path files using include/exclude filter, JSON/stdout output
+* jldclock : 1 second interval clock with min,hour,day markers
 
 Configuration
 -------------
@@ -53,6 +54,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldinotify',
                      'src/scripts/jldfetcher',
                      'src/scripts/jldfilelist',
+                     'src/scripts/jldclock',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

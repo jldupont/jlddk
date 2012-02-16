@@ -87,6 +87,12 @@ def info_dump(d, align):
             key, value=el
             logging.info(fmt % (key, value))
 
+def stdoutjs(jso):
+    try:
+        o=json.dumps(jso)
+        sys.stdout.write(o+"\n")
+    except:
+        pass
 
 def stdout(s):
     sys.stdout.write(s+"\n")

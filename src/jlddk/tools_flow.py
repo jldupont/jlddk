@@ -11,33 +11,36 @@ def build_pipeline(blocks):
     
     Errors are propagated downstream.
     
-    :param blocks: a list of handlers, order must be from head to tail
+    :param blocks: a list of python modules with a 'run' function, order must be from head to tail
     
-    Handler must be a callable with signature:
+    Run function must have this signature:
     
-        handler(nxt_handler, (context, msg))
+        run(nxt_handler, (context, msg))
         
     The 'tail' of the pipeline will be receiving None for 'nxt_handler' parameter. 
     """
     pipe=None
     rblocks=reversed(blocks)   
-    for block in rblocks:
-        handler, name=block
+    for mod in rblocks:
+        try:
+            run=getattr(mod, "run")
+        except:
+            raise Exception("Can't find 'run' function in module '%s'" % str(mod))
         if pipe is None:
-            pipe=_processor((None, handler, name))
+            pipe=_processor((None, run))
         else:
-            pipe=_processor((pipe, handler, name))
+            pipe=_processor((pipe, run))
     return pipe
 
 
 
-def _processor((nxt, handler, name)):
+def _processor((nxt, run)):
 
     def loop():
         try:
             while True:
                 ctx, msg=(yield)
-                msg=handler(nxt, (ctx, msg))
+                msg=run(nxt, (ctx, msg))
                 if msg is not None:
                     nxt.send(msg)
                     

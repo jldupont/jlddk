@@ -40,14 +40,19 @@ def build_pipeline(blocks):
 
 def _processor((nxt, run, params)):
 
+    if nxt is not None:
+        nxt_send=nxt.send
+    else:
+        nxt_send=None
+
     def loop():
         try:
             while True:
                 ctx, msg=(yield)
-                msg=run(params, nxt.send, (ctx, msg))
+                msg=run(params, nxt_send, (ctx, msg))
                 if msg is not None:
-                    if nxt is not None:
-                        nxt.send(msg)
+                    if nxt_send is not None:
+                        nxt_send(msg)
                     else:
                         logging.debug("Exception in '%s': attempting to send to 'None'" % run.__module__)
                     

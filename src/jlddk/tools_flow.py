@@ -38,14 +38,14 @@ def build_pipeline(blocks):
             raise Exception("Problem with 'init' in module '%s'" % str(mod))
         
         if pipe is None:
-            pipe=_processor((None, run, params))
+            pipe=_processor((None, run))
         else:
-            pipe=_processor((pipe, run, params))
+            pipe=_processor((pipe, run))
     return pipe
 
 
 
-def _processor((nxt, run, params)):
+def _processor((nxt, run)):
 
     if nxt is not None:
         nxt_send=nxt.send
@@ -56,7 +56,7 @@ def _processor((nxt, run, params)):
         try:
             while True:
                 ctx, msg=(yield)
-                msg=run(params, nxt_send, (ctx, msg))
+                msg=run(nxt_send, (ctx, msg))
                 if msg is not None:
                     if nxt_send is not None:
                         nxt_send(msg)

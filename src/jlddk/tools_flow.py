@@ -27,9 +27,16 @@ def build_pipeline(blocks):
     for block in rblocks:
         mod, params=block
         try:
+            init=getattr(mod, "init")
             run=getattr(mod, "run")
         except:
-            raise Exception("Can't find 'run' function in module '%s'" % str(mod))
+            raise Exception("Can't find 'run' and/or 'init' function in module '%s'" % str(mod))
+        
+        try:
+            init(params)
+        except:
+            raise Exception("Problem with 'init' in module '%s'" % str(mod))
+        
         if pipe is None:
             pipe=_processor((None, run, params))
         else:

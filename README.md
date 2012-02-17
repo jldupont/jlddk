@@ -4,6 +4,11 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.21 :
+
+* added requirement for 'init' function in tools_flow
+
+
 0.1.20 :
 
 * added 'jldclock'

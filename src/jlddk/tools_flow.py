@@ -43,7 +43,7 @@ def _processor((nxt, run, params)):
         try:
             while True:
                 ctx, msg=(yield)
-                msg=run(params, nxt, (ctx, msg))
+                msg=run(params, nxt.send, (ctx, msg))
                 if msg is not None:
                     nxt.send(msg)
                     

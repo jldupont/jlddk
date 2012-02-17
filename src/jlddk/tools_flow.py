@@ -46,7 +46,10 @@ def _processor((nxt, run, params)):
                 ctx, msg=(yield)
                 msg=run(params, nxt.send, (ctx, msg))
                 if msg is not None:
-                    nxt.send(msg)
+                    if nxt is not None:
+                        nxt.send(msg)
+                    else:
+                        logging.debug("Exception in '%s': attempting to send to 'None'" % run.__module__)
                     
         except KeyboardInterrupt:
             raise

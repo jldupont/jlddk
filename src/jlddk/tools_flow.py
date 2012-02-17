@@ -52,7 +52,7 @@ def _processor((nxt, run, params)):
             raise
         
         except Exception,e:
-            logging.debug("processor exception: %s" % str(e))
+            logging.debug("Exception in '%s': %s" % (run.__module__, str(e)))
             try:    nxt.send((ctx,  ("error", e)))
             except: nxt.send((None, ("error", e)))
 

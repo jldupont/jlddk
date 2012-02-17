@@ -4,6 +4,7 @@
     Created on 2012-02-16
     @author: jldupont
 """
+import logging
 
 def build_pipeline(blocks):
     """
@@ -51,6 +52,7 @@ def _processor((nxt, run, params)):
             raise
         
         except Exception,e:
+            logging.debug("processor exception: %s" % str(e))
             try:    nxt.send((ctx,  ("error", e)))
             except: nxt.send((None, ("error", e)))
 

@@ -2,7 +2,7 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import logging, sys, json
+import logging, sys, json, os
 from time import sleep
 from tools_os import get_root_files
 from tools_os import resolve_path, filter_files_by_ext
@@ -29,8 +29,15 @@ def run(path_source=None
     code, path_source=resolve_path(path_source)
     if not code.startswith("ok"):
         raise Exception("can't resolve path '%s'" % path_source)
-    
+
+    logging.info("Process pid: %s" % os.getpid())
+    ppid=os.getppid()
+    logging.info("Parent pid: %s" % ppid)
+    logging.info("Starting loop...")    
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         code, files=get_root_files(path_source)
         l=filter_files_by_ext(criteria, elist, (code, files))

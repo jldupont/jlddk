@@ -4,7 +4,7 @@
 """
 import logging, sys, os, uuid, json
 from time import sleep
-from tools_os import mkdir_p, get_root_files, file_contents, quick_write
+from tools_os import mkdir_p, get_root_files, file_contents
 from tools_os import rm, can_write, atomic_write
 from tools_logging import setloglevel
 from tools_web import fetch, extract_url_filename
@@ -28,8 +28,14 @@ def run(source_path=None, dest_path=None, check_path=None,
         raise Exception("Can't create destination path '%s': %s" % (dest_path, str(msg)))
             
     to_skip=[]
+    logging.info("Process pid: %s" % os.getpid())
+    ppid=os.getppid()
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         if check_path is not None:
             try:    exists=os.path.exists(check_path)

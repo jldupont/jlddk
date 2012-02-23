@@ -2,7 +2,7 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import logging, sys
+import logging, sys, os
 from tools_sys import prepare_callable
 from tools_logging import setloglevel
 
@@ -20,8 +20,14 @@ def run(module=None, function=None, function_args=None, loglevel="info", logconf
     except:
         raise Exception("%s.%s isn't callable..." %(module, function))
             
+    logging.info("Process pid: %s" % os.getpid())
+    ppid=os.getppid()
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         iline=sys.stdin.readline()
 

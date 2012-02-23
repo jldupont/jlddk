@@ -64,10 +64,15 @@ def run(primary_path=None, compare_path=None, status_filename=None
 
     ctx["tm"]=transition_manager(ctx)
             
-            
+    logging.info("Process pid: %s" % os.getpid())
+    ppid=os.getppid()
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
-        
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
+            
         code, msg=check_if_ok(status_path, default="ok")
         maybe_process(ctx, code, msg, primary_path, compare_path)
         

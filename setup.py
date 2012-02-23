@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.22"
+__version__ ="0.1.23"
 
 
 from distutils.core import setup
@@ -62,3 +62,9 @@ setup(name=         'jlddk',
                          ]
       ,long_description=DESC
       )
+
+#############################################
+
+f=open("latest", "w")
+f.write(str(__version__)+"\n")
+f.close()

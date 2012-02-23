@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.1.23: added protection against parent termination & broken pipe condition
+
 0.1.22 :
 
 * added requirement for 'init' function in tools_flow

@@ -20,8 +20,14 @@ def run(dest_path=None,
         if not os.path.isdir(dest_path):
             raise Exception("Expecting a valid destination path '%s'" % dest_path)
             
+    logging.info("Process pid: %s" % os.getpid())
+    ppid=os.getppid()
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         iline=sys.stdin.readline().strip()
         

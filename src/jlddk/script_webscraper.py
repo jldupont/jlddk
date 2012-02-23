@@ -20,8 +20,14 @@ def run(polling_interval=None, source_url=None,
     if check_path is not None:
         ct=check_transition()
     
+    logging.info("Process pid: %s" % os.getpid())
+    ppid=os.getppid()
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         if check_path is not None:
             try:    exists=os.path.exists(check_path)

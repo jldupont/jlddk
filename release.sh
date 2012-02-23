@@ -11,7 +11,7 @@ $GIT add .
 $GIT commit -m $VERSION
 $GIT push origin master
 
-$GIT tag -a $1 -m "version $VERSION"
+$GIT tag -a $VERSION -m "version $VERSION"
 $GIT push --tags
 
 

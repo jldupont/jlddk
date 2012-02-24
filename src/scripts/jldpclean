@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+"""
+    jldpclean - Process cleaner
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="Process cleaner"
+DEFAULTS={
+          "polling_interval": 30
+          ,"ppid": None
+          }
+
+def main():
+    try:
+        import jlddk.do_setup
+        import logging
+        import jlddk.do_checks
+        from jlddk.tools_sys import info_dump, dnorm
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        
+        parser.add_argument('-f',  dest='force_kill',    action="store_true", help="Perform kill", default=False)
+        
+        parser.add_argument('-u',   dest='username',  type=str, help="Restrict to specific username")
+        parser.add_argument('-pr',  dest='prefix',    type=str, help="Prefix of process name")
+        parser.add_argument('-p',    dest='polling_interval',    type=int, help="Polling interval", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-ppid', dest='ppid',    type=int, help="Restrict to parent pid", default=DEFAULTS["ppid"])
+        
+        args=parser.parse_args()
+        
+        info_dump(vars(args), 20)
+        
+        from jlddk.script_pclean import run
+        run(**dnorm(vars(args)))
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

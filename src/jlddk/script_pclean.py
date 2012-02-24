@@ -7,41 +7,44 @@ from time import sleep
 import psutil
 
 
-
 def run(prefix=None, polling_interval=None
         ,force_kill=None
         ,username=None
         ,ppid=None
         ):
 
+
+    def prefix_match(entry):
+        if prefix is None:
+            return True
+        
+        bns=map(os.path.basename, entry.cmdline)
+        flist=filter(lambda x:x.startswith(prefix), bns)
+        return len(flist)>0
+    
+
     def filtre(pentry):
         user_match=(username is None) or (username==pentry.username)
-        name_match=(prefix is None) or pentry.name.startswith(prefix)
-        ppid_match=(ppid is None) or (pentry.ppid==ppid)
-        return name_match and ppid_match and user_match
+        name_match=(prefix is None)   or (pentry.name.startswith(prefix))
+        ppid_match=(ppid is None)     or (pentry.ppid==ppid)
+        pmatch=prefix_match(pentry)
+        
+        return ppid_match and (name_match or pmatch) and user_match
 
-    def filtre_prefix(pentry):
-        name_match=(prefix is None) or pentry.name.startswith(prefix)
-        return name_match
 
 
     logging.info("Starting loop...")
     while True:
         
         plist=psutil.get_process_list()
-        nlist=filter(filtre_prefix, plist)
-        
-        for p in nlist:
-            logging.info("Name '%s' of pid '%s' of username '%s'" % (p.name, p.pid, p.username))
-
         flist=filter(filtre, plist)
         
         for p in flist:
-            name=p.name
+            cmdline=p.cmdline
             pid=p.pid
             user=p.username
             
-            details="'%s' with pid '%s' of user '%s'" % (name, pid, user)
+            details="pid '%s' '%s' : %s" % (pid, user, cmdline)
             
             if not force_kill:
                 logging.info("Would kill %s" % details)

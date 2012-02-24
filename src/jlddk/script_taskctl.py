@@ -1,17 +1,45 @@
 """
+    Ready  ----> Pending
+    Ready  ----> Error
+
+    Pending ---> Ready
+    Pending ---> Error    
+
+    Error  ----> Ready 
+    Error  ----> Stopped
+    
+    Stopped ---> Ready
+    Stopped ---> Error
+
+
+    Q:What if a task takes too much time to complete?
+                    doesn't send a "done" or "error" message?
+                    
+    A: don't have any control over here.
+
+
     Created on 2012-01-27
     @author: jldupont
 """
 import logging, sys, json, os
 from time import sleep
 
-from pyfnc import pattern, patterned
+from tools_logging import setloglevel
 
-MTYPES=["task", "done", "error"]
+from pyfnc import pattern, patterned, dic
 
-def run(args,
-        **_ 
+MTYPES=["task", "done", "error", "worker"]
+
+def run(args
+        ,logconfig=None
+        ,loglevel=None
+        ,**_ 
         ):
+    
+    if logconfig is not None:
+        logging.config.fileConfig(logconfig)
+
+    setloglevel(loglevel)
     
     ctx=dict(args)
          
@@ -47,7 +75,9 @@ def run(args,
 def hcode_ok(_, msg):
     pass
 
-
+@pattern("debug", str)
+def hcode_debug(_, msg):
+    logging.debug(msg)
 
 @pattern(any, any)
 def hcode_any(code, msg):
@@ -57,7 +87,6 @@ def hcode_any(code, msg):
 def hcode(code, msg): pass
 
 
-
 ############################################################################################
 
 def process(ctx, topic, jso):
@@ -65,58 +94,207 @@ def process(ctx, topic, jso):
         return hclock(ctx, jso)
 
     try:    
-        prefix, mtype=topic.split("_")
-        question=prefix.startswith("?")
-        prefix=prefix.lstrip("?")
+        task_type, mtype=topic.split("_")
+        question=task_type.startswith("?")
+        task_type=task_type.lstrip("?")
     except: return ("debug", "invalid topic name: %s" % topic)
     
-    prefixes=ctx["prefixes"]
-    if prefix not in prefixes:
+    task_types=ctx["task_types"]
+    if task_type not in task_types:
         return ("debug", "nothing to do: %s" % topic)
     
     if mtype not in MTYPES:
         return ("debug", "mtype not interesting: %s" % mtype)
     
-    return handle(ctx, question, prefix, mtype)
+    return handle(ctx, question, task_type, mtype)
 
 ###########################################################################################    
 
-def hclock(ctx, jso):
-    ctx["_clock"]=jso
+def hclock(ctx, _jso):
+    """
+    Have some timeouts expired?
+    
+    _$ttype: { "timeout": $timeout_left_in_seconds }
+    """
+    #ctx["_clock"]=jso
+    
+    ### go through all 'ttype' and decrease their timeout
+    ttypes=ctx["task_types"]
+    for ttype in ttypes:
+        
+        ### state timeout
+        timeout=tget(ctx, ttype, "timeout", 1)
+        timeout=(timeout-1) if timeout>0 else 0
+        tset(ctx, ttype, "timeout", timeout)
+        
+        ### worker keep-alive timeout
+        max_timeout_worker=ctx["max_timeout_worker"]
+        wtimeout=tget(ctx, ttype, "timeout_worker", max_timeout_worker)
+        wtimeout=(wtimeout-1) if timeout>0 else 0
+        tset(ctx, ttype, "timeout_worker", timeout)
+
+    ### now, compute the "next" state
+    for ttype in ttypes:
+        
+        current=tget(ctx, ttype, "state", "ready")
+        new=compute(ctx, current, ttype)
+        tset(ctx, ttype, "state", new)
+    
     return ("ok", None)
 
-###########################################################################################
-
-
-
-
-
 
 ###########################################################################################
-@pattern(dict, False, str, "error")
-def handle_error(ctx, question, prefix, mtype):
-    """
-    """
+###
+###  STATE-MACHINE
+###
 
-@pattern(dict, False, str, "task")
-def handle_task(ctx, question, prefix, mtype):
+@pattern(dict, "ready", str)
+def compute_1(ctx, _, ttype):
     """
+    Timeout expired? we are ready to ask for a new task to be performed
     """
+    timeout=tget(ctx, ttype, "timeout", 0)
+    if timeout==0:
+        send_msg(True, ttype, "task", {})
+        max_pending=ctx["max_pending"]
+        tset(ctx, ttype, "timeout", max_pending)
+        return "pending"
+    
+    return "ready"
 
-@pattern(dict, False, str, "done")
-def handle_done(ctx, question, prefix, mtype):
-    """
-    """
 
-@pattern(dict, any, any, any)
-def handle_any(_ctx, question, prefix, mtype):
+@pattern(dict, "error", str)
+def compute_2(ctx, _, ttype):
     """
+    timeout expired?  we can get out of "error" state
     """
-    q="?" if question else ""
-    return ("debug", "nothing to do with: %s%s_%s" % (q, prefix, mtype))
+    timeout=tget(ctx, ttype, "timeout", 0)
+    if timeout==0:
+        return "ready"
+    return "error"
 
+@pattern(dict, "pending", str)
+def compute_3(ctx, _, ttype):
+    """
+    timeout expired? need to advise that there is potentially a problem with the worker...
+    """
+    timeout=tget(ctx, ttype, "timeout", 0)
+    if timeout==0:
+        send_msg(True, ttype, "timeout", {})
+        return "ready"
+    
+    return "pending"
+
+
+@pattern(dict, "stopped", str)
+def compute_4(ctx, _, ttype):
+    """
+    worker now available? exit "stopped" state
+    """
+    timeout_worker=tget(ctx, ttype, "timeout_worker", 0)
+    if timeout_worker > 0:
+        return "ready"
+    
+    return "stopped"
+    
+
+@pattern(any, any, any)
+def compute_any(ctx, current, ttype):
+    raise Exception("Unknown state: %s" % current)
 
 
 @patterned
-def handle(ctx, question, prefix, mtype):
-    pass
+def compute(ctx, current, ttype): pass
+
+
+###########################################################################################
+###
+### SUPPORT FUNCTIONS
+
+def tgetall(ctx, ttype, default={}):
+    return ctx.get("_"+ttype, default)
+
+def tget(ctx, ttype, key, default=None):
+    _ttype=ctx.get("_"+ttype, {})
+    return _ttype.get(key, default)
+
+def tset(ctx, ttype, key, value):
+    _ttype=ctx.get("_"+ttype, {})
+    _ttype[key]=value
+    ctx["_"+ttype]=_ttype
+
+
+def send_msg(question, ttype, mtype, msg_dic):
+    try:
+        q="?" if question else ""
+        topic=q+ttype+"_"+mtype
+        
+        m=dic({"topic": topic}).update(msg_dic)
+        
+        sys.stdout.write(json.dumps(m))
+    except:
+        pass
+
+
+###########################################################################################
+###
+### MESSAGE HANDLING
+###
+
+@pattern(dict, False, str, "worker")
+def handle_worker(ctx, _question, ttype, _):
+    """
+    Keep alive message related to a specific task-type
+    
+    Reset timeout associated with task-type
+    When this counter reaches 0 ===>  worker is considered off-line
+    """
+    max_timeout_worker=ctx["max_timeout_worker"]
+    tset(ctx, ttype, "timeout_worker", max_timeout_worker)
+    
+
+@pattern(dict, False, str, "error")
+def handle_error(ctx, _question, ttype, _):
+    """
+    Specific "task type" in error ==> handle timeout
+    
+    Double the current timeout (min of 1 second) until max_timeout_error is reached
+    """
+    max_timeout=ctx["max_timeout_error"]
+    timeout=tget(ctx, ttype, "timeout", 1)
+    
+    timeout=min(2, timeout)
+    timeout=min(timeout*2, max_timeout)
+    
+    tset(ctx, ttype, "timeout", timeout)
+
+@pattern(dict, False, str, "task")
+def handle_task(ctx, _question, ttype, _):
+    """
+    Reset timeout, if any, since we have a 'task dispatcher' handing-out tasks
+    """
+    logging.debug("Resetting timeout for ttype: %s" % ttype)
+    tset(ctx, ttype, "timeout", 0)
+
+@pattern(dict, False, str, "done")
+def handle_done(ctx, _question, ttype, _):
+    """
+    If we receive this sort of message, 
+    it probably means there is no more error related to this task-type
+    
+    Clear outstanding task
+    """
+    tset(ctx, ttype, "state", "done")
+    
+
+@pattern(any, any, any, any)
+def handle_any(_ctx, question, ttype, mtype):
+    """ probably an error to end up here """
+    q="?" if question else ""
+    return ("debug", "nothing to do with: %s%s_%s" % (q, ttype, mtype))
+
+
+@patterned
+def handle(ctx, question, task_type, mtype): pass
+
+

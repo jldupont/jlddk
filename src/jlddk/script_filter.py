@@ -39,8 +39,9 @@ def run(module=None, function=None, function_args=None, loglevel="info", logconf
             try:    logging.error("Error processing '%s' : %s" % (iline[:20], str(e)))
             except: pass
             
-        try:
-            sys.stdout.write(oline)
-        except:
-            sys.stdout.write(str(oline)+"\n")
+        if oline is not None:
+            try:
+                sys.stdout.write(oline)
+            except:
+                sys.stdout.write(str(oline)+"\n")
 

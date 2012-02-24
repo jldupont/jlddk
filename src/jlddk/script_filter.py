@@ -19,10 +19,10 @@ def run(module=None, function=None, function_args=None, loglevel="info", logconf
         _mod, fnc=prepare_callable(module, function)
     except:
         raise Exception("%s.%s isn't callable..." %(module, function))
-            
+
+    ppid=os.getppid()            
     logging.info("Process pid: %s" % os.getpid())
-    ppid=os.getppid()
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Parent pid : %s" % ppid)
     logging.info("Starting loop...")
     while True:
         if os.getppid()!=ppid:

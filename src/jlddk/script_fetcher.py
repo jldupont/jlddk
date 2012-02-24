@@ -19,10 +19,10 @@ def run(dest_path=None,
     if dest_path is not None:
         if not os.path.isdir(dest_path):
             raise Exception("Expecting a valid destination path '%s'" % dest_path)
-            
+
+    ppid=os.getppid()            
     logging.info("Process pid: %s" % os.getpid())
-    ppid=os.getppid()
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Parent pid : %s" % ppid)
     logging.info("Starting loop...")
     while True:
         if os.getppid()!=ppid:

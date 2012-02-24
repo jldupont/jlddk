@@ -52,7 +52,7 @@ def run(source_path=None, move_path=None, check_path=None,
     to_skip=[]
     logging.info("Process pid: %s" % os.getpid())
     ppid=os.getppid()
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Parent pid : %s" % ppid)
     logging.info("Starting loop...")
     while True:
         if os.getppid()!=ppid:

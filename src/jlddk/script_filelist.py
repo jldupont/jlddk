@@ -30,9 +30,9 @@ def run(path_source=None
     if not code.startswith("ok"):
         raise Exception("can't resolve path '%s'" % path_source)
 
-    logging.info("Process pid: %s" % os.getpid())
     ppid=os.getppid()
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid : %s" % ppid)
     logging.info("Starting loop...")    
     while True:
         if os.getppid()!=ppid:

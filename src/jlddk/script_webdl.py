@@ -10,6 +10,8 @@ from tools_logging import setloglevel
 from tools_web import fetch, extract_url_filename
 from tools_func import check_transition
 
+class BrokenPipe(Exception): pass
+
 
 def run(source_path=None, dest_path=None, check_path=None, 
         batch_size=5, loglevel="info", logconfig=None, polling_interval=None, delete_fetch_error=False):
@@ -28,9 +30,9 @@ def run(source_path=None, dest_path=None, check_path=None,
         raise Exception("Can't create destination path '%s': %s" % (dest_path, str(msg)))
             
     to_skip=[]
-    logging.info("Process pid: %s" % os.getpid())
     ppid=os.getppid()
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid : %s" % ppid)
     logging.info("Starting loop...")
     while True:
         if os.getppid()!=ppid:
@@ -71,7 +73,8 @@ def run(source_path=None, dest_path=None, check_path=None,
                         continue
                     
                     process(src_file, dest_path, delete_fetch_error)
-                    
+            except BrokenPipe:
+                raise
             except Exception, e:
                 logging.error("processing file '%s': %s" % (src_file, str(e)))
             ###############################################################            
@@ -147,5 +150,6 @@ def process(src_file, dest_path, delete_fetch_error):
     
     
     try:    sys.stdout.write(json.dumps(ctx)+"\n")
-    except: pass
+    except: 
+        raise BrokenPipe()
 

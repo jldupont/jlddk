@@ -11,7 +11,8 @@ from tools_misc import batch
 
 def stdout(jo):
     try:    sys.stdout.write(json.dumps(jo)+"\n")
-    except: pass
+    except:
+        raise Exception("Exiting... probably broken pipe")
 
 def run(path_source=None
         ,polling_interval=None

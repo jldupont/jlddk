@@ -63,9 +63,9 @@ def run(primary_path=None, compare_path=None, status_filename=None
          }
 
     ctx["tm"]=transition_manager(ctx)
-            
+    
+    ppid=os.getppid()        
     logging.info("Process pid: %s" % os.getpid())
-    ppid=os.getppid()
     logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:

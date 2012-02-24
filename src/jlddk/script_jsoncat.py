@@ -10,8 +10,9 @@ from tools_logging import setloglevel
 from tools_func import check_transition
 
 def stdout(jo):
-    try:    sys.stdout.write(json.dumps(jo)+"\n")
-    except: pass
+    sys.stdout.write(json.dumps(jo)+"\n")
+
+class BrokenPipe(Exception): pass
 
 
 def run(source_path=None, move_path=None, check_path=None, 
@@ -100,6 +101,8 @@ def run(source_path=None, move_path=None, check_path=None,
                         if not code.startswith("ok"):
                             to_skip.append(src_file)
                             logging.warning("Problem processing file '%s': %s" % (src_file, maybe_error))
+                except BrokenPipe:
+                    raise
                 except KeyboardInterrupt:
                     raise
                 except Exception, e:
@@ -130,10 +133,13 @@ def process(src_file, dst_file, enable_delete):
         return ("error", "data/invalid")
     
     ###############################################
-    stdout({"sp": src_file, "code":"begin"})    
-    for line in lines:
-        stdout({"code": "line", "line": line})
-    stdout({"sp": src_file, "code":"end"})
+    try:
+        stdout({"sp": src_file, "code":"begin"})    
+        for line in lines:
+            stdout({"code": "line", "line": line})
+        stdout({"sp": src_file, "code":"end"})
+    except:
+        raise BrokenPipe("Broken Pipe")
     ###############################################
     
         

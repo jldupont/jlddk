@@ -44,10 +44,10 @@ class EventHandler(pyinotify.ProcessEvent):
         
         try:
             sys.stdout.write(json.dumps(d)+"\n")
+            sys.stdout.flush()
         except:
-            pass
-
-        sys.stdout.flush()
+            raise Exception("Exiting... probably broken pipe")
+        
         
     def __getattr__(self, name):
         if name.startswith("process_IN"):

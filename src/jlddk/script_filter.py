@@ -29,7 +29,10 @@ def run(module=None, function=None, function_args=None, loglevel="info", logconf
             logging.warning("Parent terminated... exiting")
             break
         
-        iline=sys.stdin.readline()
+        try:
+            iline=sys.stdin.readline()
+        except:
+            raise Exception("Exiting... probably broken pipe")
 
         try:
             oline=fnc(iline, *function_args)
@@ -43,5 +46,8 @@ def run(module=None, function=None, function_args=None, loglevel="info", logconf
             try:
                 sys.stdout.write(oline)
             except:
-                sys.stdout.write(str(oline)+"\n")
+                try:
+                    sys.stdout.write(str(oline)+"\n")
+                except:
+                    raise Exception("Exiting... probably broken pipe")
 

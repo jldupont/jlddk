@@ -7,6 +7,8 @@ import types
 import logging
 import importlib
 
+class BrokenPipe(Exception): pass
+
 def _echo(*pargs, **kargs):
     print pargs, kargs
 
@@ -92,13 +94,19 @@ def stdoutjs(jso):
         o=json.dumps(jso)
         sys.stdout.write(o+"\n")
     except:
-        pass
+        raise BrokenPipe()
 
 def stdout(s):
-    sys.stdout.write(s+"\n")
+    try:
+        sys.stdout.write(s+"\n")
+    except:
+        raise BrokenPipe()
 
 def stdout_flush():
-    sys.stdout.flush()
+    try:
+        sys.stdout.flush()
+    except:
+        raise BrokenPipe()
 
 def json_string(o):
     try:

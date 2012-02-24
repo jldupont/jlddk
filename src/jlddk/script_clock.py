@@ -2,14 +2,14 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import logging, sys, json
+import logging, sys, json, os
 from time import sleep
 
 ONE_SECOND=1
 
 def stdout(jo):
-    try:    sys.stdout.write(json.dumps(jo)+"\n")
-    except: pass
+    sys.stdout.write(json.dumps(jo)+"\n")
+        
 
 def run(topic_name=None):
 
@@ -24,8 +24,14 @@ def run(topic_name=None):
        ,"day_marker": False
     }
 
+    ppid=os.getppid()        
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         sec=d["sec"]+1
         min_marker=(sec==60)
@@ -46,7 +52,10 @@ def run(topic_name=None):
                 if day_marker:                    
                     d["day"]=d["day"]+1
         
-        stdout(d)
+        try:
+            stdout(d)
+        except:
+            raise Exception("Exiting... probably broken pipe")
         
         sleep(ONE_SECOND)
 

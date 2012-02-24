@@ -1,15 +1,15 @@
 """
-    Ready  ----> Pending
-    Ready  ----> Error
 
-    Pending ---> Ready
-    Pending ---> Error    
-
-    Error  ----> Ready 
-    Error  ----> Stopped
+    Ready --> Pending
+    Ready --> Error
+    Ready --> Stopped
     
-    Stopped ---> Ready
-    Stopped ---> Error
+    Pending --> Ready
+    Pending --> Error
+    Pending --> Stopped
+    
+    Error   --> Ready
+    Error   --> Stopped
 
 
     Q:What if a task takes too much time to complete?
@@ -131,7 +131,10 @@ def hclock(ctx, _jso):
         max_timeout_worker=ctx["max_timeout_worker"]
         wtimeout=tget(ctx, ttype, "timeout_worker", max_timeout_worker)
         wtimeout=(wtimeout-1) if timeout>0 else 0
-        tset(ctx, ttype, "timeout_worker", timeout)
+        tset(ctx, ttype, "timeout_worker", wtimeout)
+        
+        if wtimeout==0:
+            tset(ctx, ttype, "state", "stopped")
 
     ### now, compute the "next" state
     for ttype in ttypes:
@@ -139,6 +142,8 @@ def hclock(ctx, _jso):
         current=tget(ctx, ttype, "state", "ready")
         new=compute(ctx, current, ttype)
         tset(ctx, ttype, "state", new)
+        
+        logging.debug("current(%s) ==> new(%s)" % (current, new))
     
     return ("ok", None)
 
@@ -193,6 +198,7 @@ def compute_4(ctx, _, ttype):
     """
     timeout_worker=tget(ctx, ttype, "timeout_worker", 0)
     if timeout_worker > 0:
+        tset(ctx, ttype, "timeout", 0)
         return "ready"
     
     return "stopped"
@@ -267,6 +273,8 @@ def handle_error(ctx, _question, ttype, _):
     timeout=min(timeout*2, max_timeout)
     
     tset(ctx, ttype, "timeout", timeout)
+    tset(ctx, ttype, "state",   "error")
+    
 
 @pattern(dict, False, str, "task")
 def handle_task(ctx, _question, ttype, _):
@@ -284,7 +292,11 @@ def handle_done(ctx, _question, ttype, _):
     
     Clear outstanding task
     """
-    tset(ctx, ttype, "state", "done")
+    tset(ctx, ttype, "state", "ready")
+    
+    ### need to wait a bit between tasks...
+    wait=ctx["wait"]
+    tset(ctx, ttype, "timeout", wait)
     
 
 @pattern(any, any, any, any)

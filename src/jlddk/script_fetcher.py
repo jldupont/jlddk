@@ -83,7 +83,8 @@ def run(dest_path=None,
              }
         
         try:    sys.stdout.write(json.dumps(ctx)+"\n")
-        except: pass
+        except: 
+            raise Exception("Exiting... probably broken pipe")
             
         
 

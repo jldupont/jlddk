@@ -11,6 +11,7 @@ from tools_misc import batch
 
 from pyfnc import dic, liste
 
+
 def run(polling_interval=None, source_url=None, 
         batch_size=None,
         format_json=None, propagate_error=None, check_path=None):

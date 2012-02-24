@@ -17,14 +17,27 @@
                     
     A: don't have any control over here.
 
+    Input Messages:
+    
+        x_done
+        x_error
+        x_worker
+        
+    Output Messages:
+    
+        x_timeout
+        ?x_task
+
 
     Created on 2012-01-27
     @author: jldupont
 """
 import logging, sys, json, os
-from time import sleep
+import types
 
+from tools_sys import BrokenPipe
 from tools_logging import setloglevel
+from tools_func import transition_manager
 
 from pyfnc import pattern, patterned, dic
 
@@ -41,7 +54,19 @@ def run(args
 
     setloglevel(loglevel)
     
+    def dp(msg):
+        def _():
+            logging.debug(msg)
+        return _
+        
+    
+    tmctx={ 
+            "worker": { "up": dp("worker: started"), "down": dp("worker: stopped") }
+           #,"state":  { "up": dp, "down": dp }
+           }
+    
     ctx=dict(args)
+    ctx["_tm"]=transition_manager(tmctx)
          
     ppid=os.getppid()    
     logging.info("Process pid: %s" % os.getpid())
@@ -54,11 +79,21 @@ def run(args
 
         try:
             iline=sys.stdin.readline()
+        except KeyboardInterrupt:
+            raise
+        except:
+            raise BrokenPipe("Broken Pipe...")
+
+        #logging.debug("Received: %s" % iline)
+
+        try:
             jso=json.loads(iline)
         except:
             try:    logging.debug("Can't JSON decode: %s" % iline)
             except: pass
-            continue
+            continue            
+        
+        #logging.debug("Received: %s" % jso)
 
         try:
             topic=jso["topic"]
@@ -71,11 +106,11 @@ def run(args
 
 ############################################################################################
 
-@pattern("ok", str)
+@pattern("ok", any)
 def hcode_ok(_, msg):
     pass
 
-@pattern("debug", str)
+@pattern("debug", any)
 def hcode_debug(_, msg):
     logging.debug(msg)
 
@@ -97,11 +132,14 @@ def process(ctx, topic, jso):
         task_type, mtype=topic.split("_")
         question=task_type.startswith("?")
         task_type=task_type.lstrip("?")
-    except: return ("debug", "invalid topic name: %s" % topic)
+    except: 
+        return ("debug", "invalid topic name: %s" % topic)
+    
+    logging.debug("Process: %s %s %s" % (question, task_type, mtype))
     
     task_types=ctx["task_types"]
     if task_type not in task_types:
-        return ("debug", "nothing to do: %s" % topic)
+        return ("debug", "nothing to do: %s (%s)" % (topic, task_type))
     
     if mtype not in MTYPES:
         return ("debug", "mtype not interesting: %s" % mtype)
@@ -117,6 +155,7 @@ def hclock(ctx, _jso):
     _$ttype: { "timeout": $timeout_left_in_seconds }
     """
     #ctx["_clock"]=jso
+    tm=ctx["_tm"]
     
     ### go through all 'ttype' and decrease their timeout
     ttypes=ctx["task_types"]
@@ -130,10 +169,11 @@ def hclock(ctx, _jso):
         ### worker keep-alive timeout
         max_timeout_worker=ctx["max_timeout_worker"]
         wtimeout=tget(ctx, ttype, "timeout_worker", max_timeout_worker)
-        wtimeout=(wtimeout-1) if timeout>0 else 0
+        wtimeout=(wtimeout-1) if wtimeout>0 else 0
         tset(ctx, ttype, "timeout_worker", wtimeout)
         
         if wtimeout==0:
+            tm.send(("worker", "stopped"))
             tset(ctx, ttype, "state", "stopped")
 
     ### now, compute the "next" state
@@ -143,7 +183,7 @@ def hclock(ctx, _jso):
         new=compute(ctx, current, ttype)
         tset(ctx, ttype, "state", new)
         
-        logging.debug("current(%s) ==> new(%s)" % (current, new))
+        #tm.send(("state", new))
     
     return ("ok", None)
 
@@ -160,6 +200,9 @@ def compute_1(ctx, _, ttype):
     """
     timeout=tget(ctx, ttype, "timeout", 0)
     if timeout==0:
+        
+        ###  ?x_task
+        ###
         send_msg(True, ttype, "task", {})
         max_pending=ctx["max_pending"]
         tset(ctx, ttype, "timeout", max_pending)
@@ -185,7 +228,10 @@ def compute_3(ctx, _, ttype):
     """
     timeout=tget(ctx, ttype, "timeout", 0)
     if timeout==0:
-        send_msg(True, ttype, "timeout", {})
+        
+        ###  x_timeout
+        ###
+        send_msg(False, ttype, "timeout", {})
         return "ready"
     
     return "pending"
@@ -247,7 +293,7 @@ def send_msg(question, ttype, mtype, msg_dic):
 ### MESSAGE HANDLING
 ###
 
-@pattern(dict, False, str, "worker")
+@pattern(dict, False, types.UnicodeType, "worker")
 def handle_worker(ctx, _question, ttype, _):
     """
     Keep alive message related to a specific task-type
@@ -257,9 +303,14 @@ def handle_worker(ctx, _question, ttype, _):
     """
     max_timeout_worker=ctx["max_timeout_worker"]
     tset(ctx, ttype, "timeout_worker", max_timeout_worker)
+    logging.debug("Worker keep-alive: %s" % ttype)
+    
+    tm=ctx["_tm"]
+    tm.send(("worker", "started"))
+    return ("ok", None)
     
 
-@pattern(dict, False, str, "error")
+@pattern(dict, False, types.UnicodeType, "error")
 def handle_error(ctx, _question, ttype, _):
     """
     Specific "task type" in error ==> handle timeout
@@ -275,16 +326,16 @@ def handle_error(ctx, _question, ttype, _):
     tset(ctx, ttype, "timeout", timeout)
     tset(ctx, ttype, "state",   "error")
     
+    return ("ok", None)
 
-@pattern(dict, False, str, "task")
+@pattern(dict, False, types.UnicodeType, "task")
 def handle_task(ctx, _question, ttype, _):
     """
-    Reset timeout, if any, since we have a 'task dispatcher' handing-out tasks
+    Cool... there is a dispatcher but we don't know if the task is going to get done...
     """
-    logging.debug("Resetting timeout for ttype: %s" % ttype)
-    tset(ctx, ttype, "timeout", 0)
+    return ("ok", None)
 
-@pattern(dict, False, str, "done")
+@pattern(dict, False, types.UnicodeType, "done")
 def handle_done(ctx, _question, ttype, _):
     """
     If we receive this sort of message, 
@@ -297,16 +348,22 @@ def handle_done(ctx, _question, ttype, _):
     ### need to wait a bit between tasks...
     wait=ctx["wait"]
     tset(ctx, ttype, "timeout", wait)
-    
+    return ("ok", None)
 
 @pattern(any, any, any, any)
 def handle_any(_ctx, question, ttype, mtype):
     """ probably an error to end up here """
     q="?" if question else ""
+    logging.debug(type(_ctx))
+    logging.debug(type(question))
+    logging.debug(type(ttype))
+    logging.debug(type(mtype))
     return ("debug", "nothing to do with: %s%s_%s" % (q, ttype, mtype))
 
 
 @patterned
 def handle(ctx, question, task_type, mtype): pass
 
+
+########################################################################3
 

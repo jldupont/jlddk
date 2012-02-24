@@ -70,6 +70,16 @@ def is_trans_TF(previous, current):
 def is_trans_FT(previous, current):
     return ("tr", "up")
     
+@pattern(None, str)
+def is_trans_NS(previous, current):
+    return ("tr", "up")
+    
+@pattern(str, str)
+def is_trans_SS(previous, current):
+    if previous!=current:
+        return ("tr", "up")
+    return ("nop", None)
+    
 @patterned
 def is_trans(previous, current):
     """

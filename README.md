@@ -8,6 +8,7 @@ History
 
 * fixed broken pipe detection in "jldclock"
 * added "jldtaskctl"
+* better broken pipe handling
 
 
 0.1.23: added protection against parent termination & broken pipe condition

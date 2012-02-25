@@ -41,7 +41,7 @@ from tools_func import transition_manager
 
 from pyfnc import pattern, patterned, dic
 
-MTYPES=["task", "done", "error", "worker"]
+MTYPES=["task", "done", "error", "worker", "none"]
 
 def run(args
         ,logconfig=None
@@ -307,6 +307,21 @@ def send_msg(question, ttype, mtype, msg_dic):
 ###
 ### MESSAGE HANDLING
 ###
+@pattern(dict, False, types.UnicodeType, "none")
+def handle_none(ctx, _question, ttype, _):
+    """
+    No tasks are available...
+    No need to be sure a worker is available... 
+        saves from implementing a loop for sending "dl_worker" for nothing...
+        
+    Pretend worker is OK - we don't really care at this point.
+    """
+    max_timeout_worker=ctx["max_timeout_worker"]
+    tset(ctx, ttype, "timeout_worker", max_timeout_worker)
+    
+    tset(ctx, ttype, "state",   "ready")
+    return ("ok", None)
+
 
 @pattern(dict, False, types.UnicodeType, "worker")
 def handle_worker(ctx, _question, ttype, _):

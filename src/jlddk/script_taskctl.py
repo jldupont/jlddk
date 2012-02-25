@@ -175,7 +175,7 @@ def hclock(ctx, _jso):
         if timeout_state_report!=0:
             if timeout_report==0:
                 current=tget(ctx, ttype, "state", "ready")
-                send_msg(False, ttype, "state", current)
+                send_msg(False, ttype, "state", {"state": current})
         
         timeout_report=(timeout_report-1) if timeout_report>0 else timeout_state_report
         tset(ctx, ttype, "report_state", timeout_report)

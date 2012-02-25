@@ -28,6 +28,7 @@ DEFAULTS={
           ,"max_timeout_error":     5*30
           ,"max_pending":           2*60
           ,"wait":                  5
+          ,"timeout_state_report":  30
           
           ,"clock_topic":    "tick"
           }
@@ -47,6 +48,7 @@ def main():
         parser.add_argument('-maxte', dest="max_timeout_error",  type=int, help="Maximum timeout upon error (seconds)", default=DEFAULTS["max_timeout_error"])
         parser.add_argument('-maxpe', dest="max_pending",        type=int, help="Maximum pending timeout for task (seconds)", default=DEFAULTS["max_pending"])
         parser.add_argument('-wait',  dest="wait",               type=int, help="Wait time between tasks (seconds)", default=DEFAULTS["wait"])
+        parser.add_argument('-tors',  dest="timeout_state_report", type=int, help="Time-out for reporting state, 0 to disable (seconds)", default=DEFAULTS["timeout_state_report"])
         
         parser.add_argument('-maxwt', dest="max_timeout_worker", type=int, help="Maximum pending timeout for task (seconds)", default=DEFAULTS["max_pending"])
         

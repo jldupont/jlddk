@@ -157,6 +157,8 @@ def hclock(ctx, _jso):
     #ctx["_clock"]=jso
     tm=ctx["_tm"]
     
+    timeout_state_report=ctx["timeout_state_report"]
+    
     ### go through all 'ttype' and decrease their timeout
     ttypes=ctx["task_types"]
     for ttype in ttypes:
@@ -165,6 +167,19 @@ def hclock(ctx, _jso):
         timeout=tget(ctx, ttype, "timeout", 1)
         timeout=(timeout-1) if timeout>0 else 0
         tset(ctx, ttype, "timeout", timeout)
+        
+        ### state reporting
+        ###
+        timeout_report=tget(ctx, ttype, "report_state", timeout_state_report)
+        
+        if timeout_state_report!=0:
+            if timeout_report==0:
+                current=tget(ctx, ttype, "state", "ready")
+                send_msg(False, ttype, "state", current)
+        
+        timeout_report=(timeout_report-1) if timeout_report>0 else timeout_state_report
+        tset(ctx, ttype, "report_state", timeout_report)
+        
         
         ### worker keep-alive timeout
         max_timeout_worker=ctx["max_timeout_worker"]

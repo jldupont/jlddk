@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.27"
+__version__ ="0.2.0"
 
 
 from distutils.core import setup
@@ -32,6 +32,7 @@ Robots
 * jldfilelist : list path files using include/exclude filter, JSON/stdout output
 * jldclock : 1 second interval clock with min,hour,day markers
 * jldpclean : kills processes left to pid=1
+* jldtaskctl : task controller
 
 Configuration
 -------------
@@ -57,6 +58,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldfilelist',
                      'src/scripts/jldclock',
                      'src/scripts/jldpclean',
+                     'src/scripts/jldtaskctl',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

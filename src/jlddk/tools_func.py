@@ -77,7 +77,7 @@ def is_trans_NS(previous, current):
 @pattern(str, str)
 def is_trans_SS(previous, current):
     if previous!=current:
-        return ("tr", "up")
+        return ("tr", "ch")
     return ("nop", None)
     
 @patterned
@@ -126,7 +126,10 @@ def transition_manager(ctx):
         if maybe_tr=="tr":
             fnc=cparam.get(maybe_dir, None)
             if fnc is not None:
-                fnc()
+                try:
+                    fnc(current_state)
+                except:
+                    fnc()
         
         
 

@@ -55,13 +55,13 @@ def run(args
     setloglevel(loglevel)
     
     def dp(msg):
-        def _():
-            logging.debug(msg)
+        def _(state):
+            logging.debug(msg % state)
         return _
         
     
     tmctx={ 
-            "worker": { "up": dp("worker: started"), "down": dp("worker: stopped") }
+            "worker": { "ch": dp("Worker is: %s"), "up": dp("Worker is: %s") }
            #,"state":  { "up": dp, "down": dp }
            }
     
@@ -283,7 +283,7 @@ def send_msg(question, ttype, mtype, msg_dic):
         
         m=dic({"topic": topic}).update(msg_dic)
         
-        sys.stdout.write(json.dumps(m))
+        sys.stdout.write(json.dumps(m)+"\n")
     except:
         pass
 

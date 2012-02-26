@@ -42,6 +42,7 @@ def main():
         parser.add_argument('-sf',  dest='status_filename',  type=str, help="Filename of status file", default=DEFAULTS["status_filename"])
         parser.add_argument('-wsf', dest='wait_status',    action="store_true", help="Wait on status file", default=DEFAULTS["wait_status"])
         
+        parser.add_argument('-exts',dest='exts',             type=str, nargs="+", help="Extensions to process (optional, default is all)", default=None)
         parser.add_argument('-tp',  dest='topic_name',       type=str, help="Topic name to include in output JSON", default=None)
         
         parser.add_argument('-cp',  dest='check_path',       type=str, help="Check path")

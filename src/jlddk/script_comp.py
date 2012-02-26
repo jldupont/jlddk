@@ -32,6 +32,7 @@ def run(primary_path=None, compare_path=None,
         status_filename=None, check_path=None
         ,just_basename=None
         ,topic_name=None
+        ,exts=None
         ,wait_status=None, polling_interval=None
         ,loglevel="info", logconfig=None):
 
@@ -70,6 +71,7 @@ def run(primary_path=None, compare_path=None,
                      ,"down":  partial(wlog, compare_path)
                      }
          ,"topic_name": topic_name
+         ,"exts": exts
          }
 
     ctx["tm"]=transition_manager(ctx)
@@ -103,6 +105,13 @@ def run(primary_path=None, compare_path=None,
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
 
+def filtre(exts):
+    def _(path):
+        _, ext=os.path.splitext(path)
+        ext=ext.lstrip(".")
+        return ext in exts
+    return _
+        
 
 
 @pattern(dict, "ok", any, str, str, any)
@@ -122,6 +131,11 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
     ### not much to do if either path isn't accessible...
     if not codep.startswith("ok") or not codec.startswith("ok"):
         return
+    
+    exts=ctx["exts"]
+    if exts is not None:
+        primary_files=filter(filtre(exts), primary_files)
+        compare_files=filter(filtre(exts), compare_files)
     
     if just_basename:
         pfiles=map(os.path.basename, primary_files)

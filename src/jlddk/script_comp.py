@@ -9,6 +9,8 @@ from tools_os import resolve_path
 from tools_logging import setloglevel
 from tools_func import doOnTransition, transition_manager
 from tools_misc import check_if_ok
+from tools_func import check_transition
+from tools_sys import BrokenPipe
 
 from pyfnc import patterned, pattern, partial
 
@@ -23,9 +25,11 @@ def stdoutf():
     
 def stdout(jo):
     try:    sys.stdout.write(json.dumps(jo)+"\n")
-    except: pass
+    except: 
+        raise BrokenPipe("...broken pipe")
 
-def run(primary_path=None, compare_path=None, status_filename=None
+def run(primary_path=None, compare_path=None, 
+        status_filename=None, check_path=None
         ,wait_status=None, polling_interval=None
         ,loglevel="info", logconfig=None):
 
@@ -33,6 +37,9 @@ def run(primary_path=None, compare_path=None, status_filename=None
         logging.config.fileConfig(logconfig)
 
     setloglevel(loglevel)
+
+    if check_path is not None:
+        ct=check_transition()
 
     code, primary_path=resolve_path(primary_path)
     if not code.startswith("ok"):
@@ -73,8 +80,22 @@ def run(primary_path=None, compare_path=None, status_filename=None
             logging.warning("Parent terminated... exiting")
             break
             
-        code, msg=check_if_ok(status_path, default="ok")
-        maybe_process(ctx, code, msg, primary_path, compare_path)
+        if check_path is not None:
+            try:    exists=os.path.exists(check_path)
+            except: exists=False
+            
+            maybe_tr, _=ct.send(exists)
+            if maybe_tr=="tr" and exists:
+                logging.info("Check path: passed")
+            if maybe_tr=="tr" and not exists:
+                logging.info("Check path: failed - skipping")
+        else:
+            ## fake 'exists'
+            exists=True
+
+        if exists:            
+            code, msg=check_if_ok(status_path, default="ok")
+            maybe_process(ctx, code, msg, primary_path, compare_path)
         
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)

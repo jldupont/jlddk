@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.2.6 : added 'check path' option to jldcomp
+
 0.2.5 : added "jldostr" script
 
 0.2.4 : added a "stdin-->stdout" pass-through to jldwebdl

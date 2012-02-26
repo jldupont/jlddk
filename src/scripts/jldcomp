@@ -42,7 +42,8 @@ def main():
         parser.add_argument('-sf',  dest='status_filename',  type=str, help="Filename of status file", default=DEFAULTS["status_filename"])
         parser.add_argument('-wsf', dest='wait_status',    action="store_true", help="Wait on status file", default=DEFAULTS["wait_status"])
         
-        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-cp',  dest='check_path',       type=str, help="Check path")
+        parser.add_argument('-p',   dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
         
         parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
         parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        

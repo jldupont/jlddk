@@ -1,9 +1,21 @@
 """
     Created on 2012-01-27
     @author: jldupont
+    
+    Generates the following JSON object upon success:
+    
+        ctx={
+         "dest_filename": dest_filename
+         ,"src_filename": src_file
+         ,"url": url
+         ,"http_code": http_code
+         ,"headers": headers
+         }
+
+    
 """
-import logging, sys, os, uuid, json
-from time import sleep
+import logging, sys, os, uuid, json, select, time 
+
 from tools_os import mkdir_p, get_root_files, file_contents
 from tools_os import rm, can_write, atomic_write
 from tools_logging import setloglevel
@@ -80,8 +92,22 @@ def run(source_path=None, dest_path=None, check_path=None,
             ###############################################################            
         
         
-        logging.debug("...sleeping for %s seconds" % polling_interval)
-        sleep(polling_interval)
+        logging.debug("...waiting for %s seconds (max)" % polling_interval)
+        
+        ### Implement a "pass-through" for stdin --> stdout
+        ###  whilst also handling a maximum time-out
+        start_time=time.time()
+        while True:
+            ir, _w, _e=select.select([sys.stdin], [], [], polling_interval)
+            if len(ir):
+                iline=sys.stdin.readline()
+                sys.stdout.write(iline)
+                
+            elapsed_time = time.time() - start_time
+            if elapsed_time > polling_interval:
+                break
+            
+            
 
 
 def process(src_file, dest_path, delete_fetch_error):

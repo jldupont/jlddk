@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+"""
+    Outputs a string at regular interval on stdout
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk #@UnusedImport
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="Outputs a string at regular interval on stdout"
+DEFAULTS={
+          "polling_interval": 30
+          }
+
+def main():
+    try:
+        import jlddk.do_setup  #@UnusedImport
+        import logging
+        import jlddk.do_checks #@UnusedImport
+        
+        from jlddk.tools_sys import info_dump, dnorm
+        from jlddk.tools_logging import setloglevel
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+
+        parser.add_argument('-ostr', dest='ostr', type=str, help="String to output", required=True)
+        
+        parser.add_argument('-p',    dest='polling_interval',  type=int, help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-ll',   dest='log_level',  type=str, help="Log Level", default="info", choices=["debug", "info", "warning", "error"])
+        
+        args=dnorm(vars(parser.parse_args()))
+        
+        setloglevel(args["log_level"])
+        info_dump(args, 20)
+
+        from jlddk.script_ostr import run
+        
+        run(**args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error("! %s" % str(e))
+        sys.exit(1)
+        
+sys.exit(main())

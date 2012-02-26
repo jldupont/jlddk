@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.4"
+__version__ ="0.2.5"
 
 
 from distutils.core import setup
@@ -33,6 +33,7 @@ Robots
 * jldclock : 1 second interval clock with min,hour,day markers
 * jldpclean : kills processes left to pid=1
 * jldtaskctl : task controller
+* jldostr : outputs a string on stdout @ regular interval, pass-through for stdin-->stdout
 
 Configuration
 -------------
@@ -59,6 +60,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldclock',
                      'src/scripts/jldpclean',
                      'src/scripts/jldtaskctl',
+                     'src/scripts/jldostr',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

@@ -30,6 +30,7 @@ def stdout(jo):
 
 def run(primary_path=None, compare_path=None, 
         status_filename=None, check_path=None
+        ,just_basename=None
         ,wait_status=None, polling_interval=None
         ,loglevel="info", logconfig=None):
 
@@ -95,15 +96,15 @@ def run(primary_path=None, compare_path=None,
 
         if exists:            
             code, msg=check_if_ok(status_path, default="ok")
-            maybe_process(ctx, code, msg, primary_path, compare_path)
+            maybe_process(ctx, code, msg, primary_path, compare_path, just_basename)
         
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
 
 
 
-@pattern(dict, "ok", any, str, str)
-def maybe_process_ok(ctx, _ok, _, primary_path, compare_path):
+@pattern(dict, "ok", any, str, str, any)
+def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
     
     ### log rate limiter helper -- need to update status in context 'ctx'
     doOnTransition(ctx, "status_file.contents", "down", True, None)
@@ -120,9 +121,16 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path):
     if not codep.startswith("ok") or not codec.startswith("ok"):
         return
     
+    if just_basename:
+        pfiles=map(os.path.basename, primary_files)
+        cfiles=map(os.path.basename, compare_files)
+    else:
+        pfiles=primary_files
+        cfiles=compare_files
+    
     try:
-        setpf=set(primary_files)
-        setcf=set(compare_files)
+        setpf=set(pfiles)
+        setcf=set(cfiles)
         common=setpf.intersection(setcf)
         
         diff={
@@ -138,8 +146,8 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path):
     except Exception, e:
         logging.error("Can't compute diff between paths: %s" % str(e))
 
-@pattern(dict, any, str, any, any)
-def maybe_process_nok(ctx, _nok, msg, _x, _y):
+@pattern(dict, any, str, any, any, any)
+def maybe_process_nok(ctx, _nok, msg, _x, _y, _bn):
     """
     Rate limit logs
     """
@@ -150,7 +158,7 @@ def maybe_process_nok(ctx, _nok, msg, _x, _y):
 
 
 @patterned
-def maybe_process(ctx, code, msg, primary_path, compare_path): pass
+def maybe_process(ctx, code, msg, primary_path, compare_path, just_basename): pass
 
         
         

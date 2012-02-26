@@ -42,8 +42,11 @@ def main():
         parser.add_argument('-sf',  dest='status_filename',  type=str, help="Filename of status file", default=DEFAULTS["status_filename"])
         parser.add_argument('-wsf', dest='wait_status',    action="store_true", help="Wait on status file", default=DEFAULTS["wait_status"])
         
+        parser.add_argument('-tp',  dest='topic_name',       type=str, help="Topic name to include in output JSON", default=None)
+        
         parser.add_argument('-cp',  dest='check_path',       type=str, help="Check path")
         parser.add_argument('-jbn', dest='just_basename',    action="store_true", help="Just compare basename", default=False)
+        
         
         parser.add_argument('-p',   dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
         

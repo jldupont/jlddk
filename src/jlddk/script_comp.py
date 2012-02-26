@@ -31,6 +31,7 @@ def stdout(jo):
 def run(primary_path=None, compare_path=None, 
         status_filename=None, check_path=None
         ,just_basename=None
+        ,topic_name=None
         ,wait_status=None, polling_interval=None
         ,loglevel="info", logconfig=None):
 
@@ -68,6 +69,7 @@ def run(primary_path=None, compare_path=None,
          ,"cp_log" :{"up":    partial(ilog, compare_path)
                      ,"down":  partial(wlog, compare_path)
                      }
+         ,"topic_name": topic_name
          }
 
     ctx["tm"]=transition_manager(ctx)
@@ -133,6 +135,8 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
         setcf=set(cfiles)
         common=setpf.intersection(setcf)
         
+        
+        
         diff={
                "pp":     primary_path
               ,"cp":     compare_path
@@ -140,6 +144,10 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
               ,"cp-pp":  list(setcf-setpf)
               ,"common": list(common)
               }
+        
+        topic_name=ctx["topic_name"]
+        if topic_name is not None:
+            diff["topic"]=topic_name
         
         stdout(diff)
         stdoutf()

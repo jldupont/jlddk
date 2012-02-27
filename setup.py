@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.9"
+__version__ ="0.3.0"
 
 
 from distutils.core import setup
@@ -34,6 +34,7 @@ Robots
 * jldpclean : kills processes left to pid=1
 * jldtaskctl : task controller
 * jldostr : outputs a string on stdout @ regular interval, pass-through for stdin-->stdout
+* jldstatsubdirs: periodic status information on sub-dirs of path (JSON output, pass-through stdin-->stdout)
 
 Configuration
 -------------
@@ -61,6 +62,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldpclean',
                      'src/scripts/jldtaskctl',
                      'src/scripts/jldostr',
+                     'src/scripts/jldstatsubdirs',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

@@ -47,34 +47,34 @@ def doOnTransition(ctx, param, tr_type, current_state, func):
     """
     
 @pattern(None, None)
-def is_trans_NN(previous, current):
+def is_trans_NN(_previous, _current):
     return ('nop', None)
 
 @pattern(None, bool)
-def is_trans_NB(previous, current):
+def is_trans_NB(_previous, current):
     return ('tr', "up" if current is True else "down")
     
 @pattern(False, False)
-def is_trans_FF(previous, current):
+def is_trans_FF(_previous, _current):
     return ("nop", None)
 
 @pattern(True, True)
-def is_trans_TT(previous, current):
+def is_trans_TT(_previous, _current):
     return ("nop", None)
     
 @pattern(True, False)
-def is_trans_TF(previous, current):
+def is_trans_TF(_previous, _current):
     return ("tr", "down")
 
 @pattern(False, True)
-def is_trans_FT(previous, current):
+def is_trans_FT(_previous, _current):
     return ("tr", "up")
     
-@pattern(None, str)
-def is_trans_NS(previous, current):
+@pattern(None, any)
+def is_trans_NS(_previous, _current):
     return ("tr", "up")
     
-@pattern(str, str)
+@pattern(any, any)
 def is_trans_SS(previous, current):
     if previous!=current:
         return ("tr", "ch")
@@ -97,6 +97,18 @@ def is_trans(previous, current):
     ('tr', 'up')
     >>> is_trans(None, False)
     ('tr', 'down')
+    >>> is_trans(None, "string1")
+    ('tr', 'up')
+    >>> is_trans("string1", "string2")
+    ('tr', 'ch')
+    >>> is_trans("string1", "string1")
+    ('nop', None)
+    >>> is_trans(None, 666)
+    ('tr', 'up')
+    >>> is_trans(666, 777)
+    ('tr', 'ch')
+    >>> is_trans(666, 666)
+    ('nop', None)
     """
 
 @coroutine
@@ -131,7 +143,24 @@ def transition_manager(ctx):
                 except:
                     fnc()
         
-        
+
+def simple_transition_manager(ctx, param, current):
+    """
+    >>> ctx={}
+    >>> simple_transition_manager(ctx, "p1", 666)
+    ('tr', 'up')
+    >>> simple_transition_manager(ctx, "p1", 666)
+    ('nop', None)
+    >>> simple_transition_manager(ctx, "p1", 777)
+    ('tr', 'ch')
+    >>> simple_transition_manager(ctx, "p1", 777)
+    ('nop', None)
+    """
+    previous=ctx.get(param, None)
+    result=is_trans(previous, current)
+    ctx[param]=current
+    return result
+    
 
 @coroutine
 def check_transition():

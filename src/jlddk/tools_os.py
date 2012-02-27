@@ -5,7 +5,21 @@
 import os, errno, tempfile, types
 import subprocess
 
-from pyfnc import patterned, pattern
+from pyfnc import patterned, pattern, partial
+
+
+def getsubdirs(path):
+    """
+    >>> getsubdirs("/tmp")
+    """
+    try:
+        paths=os.listdir(path)
+        paths=map(partial(os.path.join, path), paths)
+        dirs=filter(os.path.isdir, paths)
+        return ("ok", dirs)
+    except Exception,e:
+        return ("error", e)
+
 
 def move(src_path, dst_path):
     try:

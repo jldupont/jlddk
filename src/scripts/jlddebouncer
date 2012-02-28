@@ -39,6 +39,7 @@ def main():
         parser.add_argument('-itp',   dest='itopic',  type=str, help="Input topic of JSON message", required=True)
         parser.add_argument('-otp',   dest='otopic',  type=str, help="Output topic of JSON message", required=True)
         
+        parser.add_argument('-ukv',   dest='use_kv', action="store_true", help="Use the input message's key & value field names", default=False)
         parser.add_argument('-hin',   dest='hin',    type=int, help="Input hysteresis (cycle)", default=DEFAULTS["hin"])
         
         parser.add_argument('-p',   dest="polling_interval", type=int,  help="Polling interval", default=DEFAULTS["polling_interval"])

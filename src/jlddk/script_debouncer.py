@@ -166,11 +166,15 @@ def perform_update(ctx):
             
     ### clean dict without stale entries
     ctx["pairs"]=new
-            
+    
+    use_kv=ctx["use_kv"]
     otopic=ctx["otopic"]
     for entry in states:
         key, value, stability=entry
-        m={"topic":otopic, "key": key, "value": value, "stable": stability}
+        if use_kv:
+            m={"topic":otopic, ctx["key"]: key, ctx["value"]: value, "stable": stability}
+        else:
+            m={"topic":otopic, "key": key, "value": value, "stable": stability}
         stdout(m)
 
 

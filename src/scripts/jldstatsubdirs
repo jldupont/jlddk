@@ -32,7 +32,8 @@ def main():
         from jlddk.tools_sys import info_dump, dnorm
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-sp',  dest='path',  type=str, help="Source path", required=True)
+        parser.add_argument('-sp',  dest='path',   type=str, help="Source path", required=True)
+        parser.add_argument('-a',   dest='always', action="store_true", help="Always send update (even if no change)", default=False)
         
         parser.add_argument('-tp',  dest='topic',  type=str, help="Topic of output JSON message", required=True)
         parser.add_argument('-p',   dest="polling_interval", type=int,  help="Polling interval", default=DEFAULTS["polling_interval"])

@@ -18,6 +18,7 @@ def stdout(jo):
 def run( path=None
         ,polling_interval=None
         ,topic=None
+        ,always=None
         ,**_
         ):
 
@@ -28,7 +29,7 @@ def run( path=None
     def loginfo(path, state, *_):
         logging.info("Path state '%s': %s" % (path, state))
 
-    ctx={"topic": topic, "path": path}
+    ctx={"topic": topic, "path": path, "always":always}
     ctx["_path"]={
                   "previous": "ok"
                   ,"ch": partial(loginfo, path)
@@ -73,6 +74,7 @@ def getchanges(ctx, entry):
 def process(ctx, subdirs):
     topic=ctx["topic"]
     path=ctx["path"]
+    always=ctx["always"]
     
     minfo=map(getmtime, subdirs)
     
@@ -81,7 +83,7 @@ def process(ctx, subdirs):
     for entry in entries:
         path, mtime, result=entry
         maybe_tr, _=result
-        if maybe_tr=="tr":
+        if maybe_tr=="tr" or always:
             output(topic, path, mtime)
 
 

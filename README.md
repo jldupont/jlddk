@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.4.2: added "jldrun"
+
 0.3.0: added 'jldstatsubdirs'
 
 0.2.8: added 'tp' option to jldcomp

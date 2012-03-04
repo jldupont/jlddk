@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+"""
+    Executes a local script periodically
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="Executes a script periodically"
+DEFAULTS={
+          "polling_interval": 30
+          }
+
+def main():
+    try:
+        import jlddk.do_setup
+        import logging
+        import jlddk.do_checks
+        from jlddk.tools_logging import setloglevel
+        from jlddk.tools_sys import info_dump, dnorm        
+        
+        parser=argparse.ArgumentParser(description=DESC)
+        parser.add_argument('-m',   dest='module_name',     type=str, help="Python module name", required=True)
+        parser.add_argument('-f',   dest='function_name',   type=str, help="Python function name inside module", required=True)
+        parser.add_argument('-a',   dest='fargs',           type=str, help="Python function arguments", nargs="+", default=[])
+        
+        parser.add_argument('-p',  type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")
+        
+        args=dnorm(vars(parser.parse_args()))
+        
+        info_dump(args, 20)
+        setloglevel(args["loglevel"])
+        
+        from jlddk.script_run import run
+        run(args, **args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+
+sys.exit(main())

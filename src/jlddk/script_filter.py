@@ -7,7 +7,9 @@ from tools_sys import prepare_callable
 from tools_logging import setloglevel
 
 
-def run(module=None, function=None, function_args=None, loglevel="info", logconfig=None):
+def run(module=None, function=None, function_args=None, 
+        no_filter_empty=None
+        ,loglevel="info", logconfig=None):
     
     if logconfig is not None:
         logging.config.fileConfig(logconfig)
@@ -30,9 +32,14 @@ def run(module=None, function=None, function_args=None, loglevel="info", logconf
             break
         
         try:
-            iline=sys.stdin.readline()
+            iline=sys.stdin.readline().strip(" \n")
         except:
             raise Exception("Exiting... probably broken pipe")
+
+        if not no_filter_empty:
+            if iline=="":
+                logging.debug("Skipping empty line...")
+                continue
 
         try:
             oline=fnc(iline, *function_args)

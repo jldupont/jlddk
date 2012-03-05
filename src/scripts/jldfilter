@@ -40,6 +40,9 @@ def main():
         from jlddk.tools_sys import dnorm, info_dump
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        
+        parser.add_argument('-nfe', dest="no_filter_empty", action="store_true",  help="No filter empty string", default=False)
+        
         parser.add_argument('-m',   dest="module",        type=str,  help="Python module", required=True)
         parser.add_argument('-f',   dest="function",      type=str,  help="Python function inside module", required=True)
         parser.add_argument('-a',   dest="function_args", nargs='+', help="Arguments to function inside module", default=[])

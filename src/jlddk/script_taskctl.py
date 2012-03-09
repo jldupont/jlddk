@@ -11,6 +11,7 @@
     Error   --> Ready
     Error   --> Stopped
 
+    Stopeed --> 
 
     Q:What if a task takes too much time to complete?
                     doesn't send a "done" or "error" message?
@@ -78,13 +79,16 @@ def run(args
             break
 
         try:
-            iline=sys.stdin.readline()
+            iline=sys.stdin.readline().strip(" \n")
         except KeyboardInterrupt:
             raise
         except:
             raise BrokenPipe("Broken Pipe...")
 
         #logging.debug("Received: %s" % iline)
+
+        if iline=="":
+            continue
 
         try:
             jso=json.loads(iline)

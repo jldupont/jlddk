@@ -20,9 +20,9 @@ def run(polling_interval=None, source_url=None,
     
     if check_path is not None:
         ct=check_transition()
-    
+
+    ppid=os.getppid()    
     logging.info("Process pid: %s" % os.getpid())
-    ppid=os.getppid()
     logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
@@ -89,7 +89,7 @@ def process_l2(source_url, propagate_error, format_json, batch_size):
         proc_l3.send(( (http_code, headers), (code_extract, hrefs) ))
 
 @coroutine
-def process_l3(source_url, propagate_error, format_json, batch_size):
+def process_l3(source_url, _propagate_error, format_json, batch_size):
     
     while True:
         ( (http_code, headers), (code_extract, hrefs) )=(yield)

@@ -48,6 +48,7 @@ def run(module=None, function=None, function_args=None,
         except Exception, e:
             try:    logging.error("Error processing '%s' : %s" % (iline[:20], str(e)))
             except: pass
+            continue
             
         if oline is not None:
             try:

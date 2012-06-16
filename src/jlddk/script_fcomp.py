@@ -10,6 +10,7 @@ def run(list_matches=None,
         list_diffs=None,
         list_sets=None,
         just_basename=None,
+        just_filename=None,
         path_a=None,
         path_b=None,
         verbose=None
@@ -29,6 +30,13 @@ def run(list_matches=None,
     if just_basename:
         ga=map(os.path.basename, ga)
         gb=map(os.path.basename, gb)
+        
+    if just_filename:
+        ga=map(os.path.splitext, ga)
+        ga=map(lambda t:t[0], ga)
+        gb=map(os.path.splitext, gb)
+        gb=map(lambda t:t[0], gb)
+        
             
     sa=set(ga)
     sb=set(gb)

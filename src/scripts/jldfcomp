@@ -36,6 +36,7 @@ def main():
         parser.add_argument('-ls',  dest='list_sets',     action="store_true", help="List working sets")
         
         parser.add_argument('-jbn', dest='just_basename', action="store_true", help="Just basename comparison")
+        parser.add_argument('-jfn', dest='just_filename', action="store_true", help="Just filename (no extension)")
         
         parser.add_argument('-vb',  dest='verbose', action="store_true", help="Verbose output")
         

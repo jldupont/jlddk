@@ -2,16 +2,13 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import sys
 import os
 import glob
-
-from tools_os import get_root_files
-from tools_os import resolve_path
 
 
 def run(list_matches=None,
         list_diffs=None,
+        list_sets=None,
         just_basename=None,
         path_a=None,
         path_b=None,
@@ -42,6 +39,9 @@ def run(list_matches=None,
     if list_diffs:
         out(sa.symmetric_difference(sb), verbose, '!= ')
         
+    if list_sets:
+        out(sa, verbose, "pa: ")
+        out(sb, verbose, "pb: ")
 
 def out(liste, verbose, prefix):
     if not verbose:

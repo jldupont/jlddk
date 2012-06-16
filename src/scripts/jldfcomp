@@ -33,6 +33,8 @@ def main():
         
         parser.add_argument('-lm',  dest='list_matches',  action="store_true", help="List matches")
         parser.add_argument('-ld',  dest='list_diffs',    action="store_true", help="List differences")
+        parser.add_argument('-ls',  dest='list_sets',     action="store_true", help="List working sets")
+        
         parser.add_argument('-jbn', dest='just_basename', action="store_true", help="Just basename comparison")
         
         parser.add_argument('-vb',  dest='verbose', action="store_true", help="Verbose output")

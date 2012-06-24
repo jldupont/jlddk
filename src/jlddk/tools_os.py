@@ -69,8 +69,8 @@ def atomic_write(path, contents):
     try:
         ### part 2: rename to specified path
         os.rename(tfn, path)
-    except:
-        return ("error", "rename to path '%s'" % path)
+    except Exception,e:
+        return ("error", "rename to path '%s': %s" % (path, e))
         
     return ("ok", tfn)
         

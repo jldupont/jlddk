@@ -50,6 +50,8 @@ def run(path_dest=None,
                 raise Exception("Invalid input format: %s" % e)
             continue
         
+        maybe_log(verbose, "Received input with key '%s'" % key)
+        
         if ext is not None:
             dpath=os.path.join(path, key, ext)
         else:
@@ -62,6 +64,6 @@ def run(path_dest=None,
         result, _=atomic_write(dpath, contents)
         if not result.startswith("ok"):
             if not ignore_fault:
-                raise Exception("Error writing output file '':" % (dpath, _))
+                raise Exception("Error writing output file '%s':%s" % (dpath, _))
         
         

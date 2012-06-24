@@ -58,6 +58,7 @@ def run(path_dest=None,
         if keep_key:
             contents="%s\t%s" % (key, contents)
             
+        maybe_log(verbose, "Writing to: %s" % dpath)
         result, _=atomic_write(dpath, contents)
         if not result.startswith("ok"):
             if not ignore_fault:

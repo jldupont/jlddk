@@ -51,9 +51,9 @@ def run(path_dest=None,
             continue
         
         if ext is not None:
-            dpath=os.path.join(path_dest, key, ext)
+            dpath=os.path.join(path, key, ext)
         else:
-            dpath=os.path.join(path_dest, key)
+            dpath=os.path.join(path, key)
             
         if keep_key:
             contents="%s\t%s" % (key, contents)

@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+"""
+    jlduncat 
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="""Receive from stdin "key\tcontents\n" and write to key[.ext]"""
+
+def main():
+    try:
+        import jlddk.do_setup
+        import logging
+        import jlddk.do_checks
+        from jlddk.tools_sys import info_dump, dnorm
+        from jlddk.tools_logging import setloglevel
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        
+        parser.add_argument('-dp',  dest='path_dest',     type=str,  help="Append extension to all files", required=True)
+        parser.add_argument('-if',   dest='ignore_fault', action="store_true", help="Ignore fault")
+        parser.add_argument('-v',    dest='verbose',      action="store_true", help="Verbose mode")
+        parser.add_argument('-ext',  dest='ext',          type=str,  help="Append extension to all files")
+        parser.add_argument('-kk',   dest='keep_key',     action="store_true",  help="Keep 'key' i.e. first column in input")
+        
+        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
+        
+        args=dnorm(vars(parser.parse_args()))
+        
+        #info_dump(args, 20)
+        setloglevel(args["loglevel"])
+        
+        from jlddk.script_uncat import run
+        run(**args)
+
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

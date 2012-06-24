@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+"""
+    jldcat - 'cat' command with "filename\tcontents" output on stdin
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk
+
+########################################################################
+
+DESC="'cat' command with 'filename\tcontents' output on stdin"
+
+def main():
+    try:
+        import jlddk.do_setup
+        import logging
+        import jlddk.do_checks
+        from jlddk.tools_sys import info_dump, dnorm
+        from jlddk.tools_logging import setloglevel
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        #parser.add_argument('-sp',   dest='path_source',  nargs='+', type=str, help="Source path", required=True)
+        parser.add_argument('-sp',   dest='path_source',  type=str, help="Source path", required=True)
+        parser.add_argument('-cd',   dest='check_done',   action="store_true", help="Check '.done' file")
+        parser.add_argument('-gd',   dest='gen_done',     action="store_true", help="Generate '.done' file")
+        parser.add_argument('-if',   dest='ignore_fault', action="store_true", help="Ignore fault")
+        parser.add_argument('-v',    dest='verbose',      action="store_true", help="Verbose mode")
+        parser.add_argument('-rext', dest='rm_ext',       action="store_true", help="Remove extension from output filename")
+        
+        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
+        
+        args=dnorm(vars(parser.parse_args()))
+        
+        #info_dump(args, 20)
+        setloglevel(args["loglevel"])
+        
+        from jlddk.script_cat import run
+        run(**args)
+
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

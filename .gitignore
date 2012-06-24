@@ -14,3 +14,4 @@ war/
 .gwt-log
 /dist
 *.egg-info
+/result.txt

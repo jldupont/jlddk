@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.4.7"
+__version__ ="0.4.8"
 
 
 from distutils.core import setup
@@ -26,7 +26,8 @@ Robots
 * jldfilter : filter stdin through a Python module, output on stdout
 * jldcomp : compare 2 filesystem paths for difference in files
 * jldfcomp : compare globs of files
-* jldjsoncat : 'cat' files to stdin by encapsulating them in JSON objects
+* jldcat: 'cat' files to stdout, 1 per line with format 'filename\tcontents\n'
+* jldjsoncat : 'cat' files to stdout by encapsulating them in JSON objects
 * jldwebdl : gated web page download, source links contained in file system path
 * jldinotify : path change notification over JSON/stdout
 * jldfetcher : web page fetcher which takes instructions from stdin
@@ -56,6 +57,7 @@ setup(name=         'jlddk',
       scripts=      ['src/scripts/jldwebscraper',
                      'src/scripts/jldfilter',
                      'src/scripts/jldwebdl',
+                     'src/scripts/jldcat',
                      'src/scripts/jldjsoncat',
                      'src/scripts/jldcomp',
                      'src/scripts/jldfcomp',

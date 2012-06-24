@@ -54,7 +54,9 @@ def atomic_write(path, contents):
     >>> atomic_write("/tmp/_jlddk_atomic_write", "test!") ## doctest: +ELLIPSIS
     ('ok', ...
     """
-    fd, tfn=tempfile.mkstemp()
+    
+    dn=os.path.dirname(path)
+    fd, tfn=tempfile.mkstemp(dir=dn)
     
     try:
         ### part 1: write to temp file

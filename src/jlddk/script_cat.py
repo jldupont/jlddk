@@ -41,7 +41,7 @@ def run(path_source=None,
     for _file in files:
         
         if check_done:
-            exists=os.path.exists(cp+".done")
+            exists=os.path.exists(_file+".done")
             if exists:
                 maybe_log(verbose, "File '%s' already processed... skipping" % _file)
                 continue

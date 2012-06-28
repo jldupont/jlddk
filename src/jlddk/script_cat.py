@@ -54,7 +54,7 @@ def run(path_source=None,
                 raise Exception("Can't process '%s': %s" % (_file, e))
             
         if gen_done:
-            result, _=touch(os.path.join(_file, ".done"))
+            result, _=touch(_file+".done")
             if not result.startswith("ok"):
                 if not ignore_fault:
                     raise Exception("Can't write 'done' file in source path")

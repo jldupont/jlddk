@@ -40,6 +40,9 @@ def run(path_source=None,
     
     for _file in files:
         
+        if _file.endswith(".done"):
+            continue
+        
         if check_done:
             exists=os.path.exists(_file+".done")
             if exists:

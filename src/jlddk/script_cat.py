@@ -11,6 +11,7 @@ def maybe_log(verbose, msg):
     
 
 def run(path_source=None,
+        path_done=None,
         check_done=None,
         gen_done=None,  
         ignore_fault=False,
@@ -20,7 +21,8 @@ def run(path_source=None,
         ,**_
         ):
     
-    
+    if check_done and path_done is None:
+        raise Exception("Must specify 'done path'")
     
     maybe_log(verbose, "Resolving path for: %s" % path_source)
     try:
@@ -29,6 +31,17 @@ def run(path_source=None,
         spath=os.path.expanduser(os.path.expandvars(spath))
     except:
         raise Exception("Can't resolve path")
+
+    dpath=None
+    if check_done:
+        maybe_log(verbose, "Resolving path for done files: %s" % path_done)
+        try:
+            dpath=os.path.abspath(path_done)
+            dpath=dpath.strip("\"'")
+            dpath=os.path.expanduser(os.path.expandvars(dpath))
+        except:
+            raise Exception("Can't resolve path")
+        
 
     try:    
         files=glob.glob(os.path.join(spath, "*"))
@@ -43,26 +56,30 @@ def run(path_source=None,
         if _file.endswith(".done"):
             continue
         
+        bn=os.path.basename(_file)
+        
         if check_done:
-            exists=os.path.exists(_file+".done")
+            pbn=os.path.join(dpath, bn)
+            exists=os.path.exists(pbn+".done")
             if exists:
-                maybe_log(verbose, "File '%s' already processed... skipping" % _file)
+                maybe_log(verbose, "File '%s' already processed... skipping" % bn)
                 continue
             
         try:
-            maybe_log(verbose, "Processing '%s'" % _file)
+            maybe_log(verbose, "Processing '%s'" % bn)
             process_file(verbose, ignore_fault, rm_ext, _file)
         except Exception,e:
             if not ignore_fault:
-                raise Exception("Can't process '%s': %s" % (_file, e))
+                raise Exception("Can't process '%s': %s" % (bn, e))
             
         if gen_done:
-            result, _=touch(_file+".done")
+            done_file=os.path.join(dpath, bn)
+            result, _=touch(done_file+".done")
             if not result.startswith("ok"):
                 if not ignore_fault:
-                    raise Exception("Can't write 'done' file in source path")
+                    raise Exception("Can't write 'done' file in 'done' path")
             else:
-                maybe_log(verbose, "Wrote 'done' file for: %s" % _file)
+                maybe_log(verbose, "Wrote 'done' file for: %s" % bn)
     
     
 def process_file(verbose, ignore_fault, rm_ext, _file):

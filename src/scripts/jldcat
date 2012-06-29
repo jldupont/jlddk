@@ -29,7 +29,7 @@ def main():
         from jlddk.tools_logging import setloglevel
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        #parser.add_argument('-sp',   dest='path_source',  nargs='+', type=str, help="Source path", required=True)
+
         parser.add_argument('-sp',   dest='path_source',  type=str, help="Source path", required=True)
         parser.add_argument('-cd',   dest='check_done',   action="store_true", help="Check '.done' file")
         parser.add_argument('-dp',   dest='path_done',    type=str, help="Path for 'done' files")

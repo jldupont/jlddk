@@ -4,6 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
+__version__="0.1"
 import os, sys, argparse
 op=os.path
 
@@ -18,7 +19,7 @@ except:
 
 ########################################################################
 
-DESC="Task Controller"
+DESC="Task Controller - v%s" % __version__
 DEFAULTS={
           "polling_interval": 30
           ,"max_backoff":     60

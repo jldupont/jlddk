@@ -11,7 +11,10 @@ def stdout(jo):
     sys.stdout.write(json.dumps(jo)+"\n")
         
 
-def run(topic_name=None):
+def run(topic_name=None
+        ,separate_msg_marker=False
+        ,suppress_second_marker=False
+        ):
 
     ### elapsed
     d={"topic": topic_name
@@ -28,6 +31,10 @@ def run(topic_name=None):
     logging.info("Process pid: %s" % os.getpid())
     logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
+    
+    min_marker=False
+    hour_marker=False
+    day_marker=False
     while True:
         if os.getppid()!=ppid:
             logging.warning("Parent terminated... exiting")
@@ -52,8 +59,21 @@ def run(topic_name=None):
                 if day_marker:                    
                     d["day"]=d["day"]+1
         
+        if suppress_second_marker:
+            if not min_marker and not hour_marker and not day_marker:
+                sleep(ONE_SECOND)
+                continue
+               
         try:
             stdout(d)
+            
+            if separate_msg_marker:
+                if min_marker:
+                    stdout({"topic":"min_marker"})
+                if hour_marker:
+                    stdout({"topic":"hour_marker"})
+                if day_marker:
+                    stdout({"topic":"day_marker"})
         except:
             raise Exception("Exiting... probably broken pipe")
         

@@ -4,18 +4,18 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
 try:
-    import jlddk
+    import jlddk #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jlddk
+    import jlddk #@UnusedImport
 
 ########################################################################
 
@@ -23,13 +23,11 @@ DESC="""Receive from stdin "key\tcontents\n" and write to key[.ext] - v%s""" % _
 
 def main():
     try:
-        import jlddk.do_setup
+        import jlddk.do_setup  #@UnusedImport
         import logging
-        import jlddk.do_checks
-        from jlddk.tools_sys import info_dump, dnorm
-        from jlddk.tools_logging import setloglevel
+        import jlddk.do_checks #@UnusedImport
         
-        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         
         parser.add_argument('-dp',  dest='path_dest',     type=str,  help="Append extension to all files", required=True)
         parser.add_argument('-if',   dest='ignore_fault', action="store_true", help="Ignore fault")
@@ -37,16 +35,10 @@ def main():
         parser.add_argument('-ext',  dest='ext',          type=str,  help="Append extension to all files")
         parser.add_argument('-kk',   dest='keep_key',     action="store_true",  help="Keep 'key' i.e. first column in input")
         
-        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
-        
-        args=dnorm(vars(parser.parse_args()))
-        
-        #info_dump(args, 20)
-        setloglevel(args["loglevel"])
-        
         from jlddk.script_uncat import run
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
         run(**args)
-
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

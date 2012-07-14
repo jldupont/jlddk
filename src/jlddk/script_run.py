@@ -6,8 +6,7 @@ import logging, os, time
 
 from jlddk.tools_sys import prepare_callable, stdout, stdout_flush
 
-def run(_args 
-        ,module_name=None
+def run( module_name=None
         ,function_name=None
         ,fargs=None
         ,polling_interval=None

@@ -14,6 +14,7 @@ def stdout(jo):
 def run(topic_name=None
         ,separate_msg_marker=False
         ,suppress_second_marker=False
+        ,**_
         ):
 
     ### elapsed
@@ -32,35 +33,35 @@ def run(topic_name=None
     logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     
-    min_marker=False
-    hour_marker=False
-    day_marker=False
     while True:
         if os.getppid()!=ppid:
             logging.warning("Parent terminated... exiting")
             break
+
+        min_marker=False
+        hour_marker=False
+        day_marker=False
         
         sec=d["sec"]+1
-        min_marker=(sec==60)
-        d["min_marker"]=min_marker
+        d["min_marker"]=(sec==60)
         d["sec"]=sec % 60
         
-        if min_marker:
+        if d["min_marker"]:
             _min=d["min"]+1
-            hour_marker=(_min==60)
-            d["hour_marker"]=hour_marker
+            d["hour_marker"]=(_min==60)
             d["min"]=_min % 60
             
-            if hour_marker:            
+            if d["hour_marker"]:            
                 hour=d["hour"]+1
-                day_marker=(hour==24)
+                d["day_marker"]=(hour==24)
                 d["hour"]=hour % 24
                 
-                if day_marker:                    
+                if d["day_marker"]:                    
                     d["day"]=d["day"]+1
         
+        #logging.debug(" sec(%s) min_marker(%s) hour_marker(%s) day_marker(%s)" % (sec, min_marker, hour_marker, day_marker))
         if suppress_second_marker:
-            if not min_marker and not hour_marker and not day_marker:
+            if not d["min_marker"] and not d["hour_marker"] and not d["day_marker"]:
                 sleep(ONE_SECOND)
                 continue
                

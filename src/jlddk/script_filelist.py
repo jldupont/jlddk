@@ -19,6 +19,7 @@ def run(path_source=None
         ,ext_include=None
         ,ext_exclude=None
         ,batch_size=None
+        ,**_
         ):
 
     if ext_include is not None and ext_exclude is not None:

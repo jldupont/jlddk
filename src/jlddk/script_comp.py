@@ -34,12 +34,7 @@ def run(primary_path=None, compare_path=None,
         ,topic_name=None
         ,exts=None
         ,wait_status=None, polling_interval=None
-        ,loglevel="info", logconfig=None):
-
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
+        ,**_):
 
     if check_path is not None:
         ct=check_transition()
@@ -169,7 +164,7 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
         logging.error("Can't compute diff between paths: %s" % str(e))
 
 @pattern(dict, any, str, any, any, any)
-def maybe_process_nok(ctx, _nok, msg, _x, _y, _bn):
+def maybe_process_nok(ctx, _nok, _msg, _x, _y, _bn):
     """
     Rate limit logs
     """

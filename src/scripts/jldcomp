@@ -8,22 +8,22 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
 try:
-    import jlddk
+    import jlddk #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jlddk
+    import jlddk #@UnusedImport
 
 ########################################################################
 
-DESC="Compare filename level difference between 2 directory paths - v%s" % __version__
+DESC="""Compare filename level difference between 2 directory paths - v%s""" % __version__
 DEFAULTS={
           "polling_interval": 30
           ,"status_filename": "_status"
@@ -32,10 +32,9 @@ DEFAULTS={
 
 def main():
     try:
-        import jlddk.do_setup
+        import jlddk.do_setup #@UnusedImport
         import logging
-        import jlddk.do_checks
-        from jlddk.tools_sys import info_dump, dnorm
+        import jlddk.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-pp',  dest='primary_path',  type=str, help="Primary path", required=True)
@@ -48,19 +47,14 @@ def main():
         
         parser.add_argument('-cp',  dest='check_path',       type=str, help="Check path")
         parser.add_argument('-jbn', dest='just_basename',    action="store_true", help="Just compare basename", default=False)
-        
-        
+                
         parser.add_argument('-p',   dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
         
-        parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
-        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
-                
-        args=parser.parse_args()
-        
-        info_dump(vars(args), 20)
-        
         from jlddk.script_comp import run
-        run(**dnorm(vars(args)))
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
+
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

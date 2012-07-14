@@ -4,22 +4,22 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
 try:
-    import jlddk
+    import jlddk #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jlddk
+    import jlddk #@UnusedImport
 
 ########################################################################
 
-DESC="Task Controller - v%s" % __version__
+DESC="""Task Controller - v%s""" % __version__
 DEFAULTS={
           "polling_interval": 30
           ,"max_backoff":     60
@@ -36,12 +36,11 @@ DEFAULTS={
 
 def main():
     try:
-        import jlddk.do_setup
+        import jlddk.do_setup  #@UnusedImport
         import logging
-        import jlddk.do_checks
-        from jlddk.tools_sys import info_dump, dnorm
-        
-        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        import jlddk.do_checks #@UnusedImport
+                
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-tt',    dest='task_types',   nargs="+", type=str, help="Task types to handle", required=True)
         
         parser.add_argument('-tpc',   dest='clock_topic',  type=str, help="1 second clock topic-name", default=DEFAULTS["clock_topic"])
@@ -53,19 +52,10 @@ def main():
         
         parser.add_argument('-maxwt', dest="max_timeout_worker", type=int, help="Maximum pending timeout for task (seconds)", default=DEFAULTS["max_pending"])
         
-        #parser.add_argument('-maxbo', dest='max_backoff',  type=int, help="Maximum backoff upon 'x_error' (seconds)", default=DEFAULTS["max_backoff"])
-        #parser.add_argument('-minbo', dest='min_backoff',  type=int, help="Minimum backoff upon 'x_error' (seconds)", default=DEFAULTS["min_backoff"])
-                        
-        parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file")
-        parser.add_argument('-ll',  dest="loglevel",  type=str,  help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")        
-                        
-        args=parser.parse_args()
-        args=dnorm(vars(args))
-        
-        info_dump(args, 20)
-        
         from jlddk.script_taskctl import run
-        run(args, **args)
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

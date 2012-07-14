@@ -18,7 +18,6 @@ import logging, sys, os, uuid, json, select, time
 
 from tools_os import mkdir_p, get_root_files, file_contents
 from tools_os import rm, can_write, atomic_write
-from tools_logging import setloglevel
 from tools_web import fetch, extract_url_filename
 from tools_func import check_transition
 
@@ -26,16 +25,13 @@ class BrokenPipe(Exception): pass
 
 
 def run(source_path=None, dest_path=None, check_path=None, 
-        batch_size=5, loglevel="info", logconfig=None, polling_interval=None, delete_fetch_error=False):
+        batch_size=5, 
+        polling_interval=None, delete_fetch_error=False
+        ,**_):
     
     if check_path is not None:
         ct=check_transition()
     
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
-
     logging.info("Creating (if necessary) destination path: %s" % dest_path)
     code, msg=mkdir_p(dest_path)
     if not code.startswith("ok"):

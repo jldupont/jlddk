@@ -14,7 +14,8 @@ from pyfnc import dic, liste
 
 def run(polling_interval=None, source_url=None, 
         batch_size=None,
-        format_json=None, propagate_error=None, check_path=None):
+        format_json=None, propagate_error=None, check_path=None
+        ,**_):
     
     proc=process(source_url, propagate_error, format_json, batch_size)
     

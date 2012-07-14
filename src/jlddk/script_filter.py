@@ -4,18 +4,12 @@
 """
 import logging, sys, os
 from tools_sys import prepare_callable
-from tools_logging import setloglevel
 
 
 def run(module=None, function=None, function_args=None, 
         no_filter_empty=None
-        ,loglevel="info", logconfig=None):
+        ,**_):
     
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
-
     try:                
         logging.info("Preparing callable '%s' from module '%s'" % (function, module))
         _mod, fnc=prepare_callable(module, function)

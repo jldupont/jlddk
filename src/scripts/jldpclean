@@ -4,22 +4,22 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
 try:
-    import jlddk
+    import jlddk #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jlddk
+    import jlddk #@UnusedImport
 
 ########################################################################
 
-DESC="Process cleaner - v%s" % __version__
+DESC="""Process cleaner - v%s""" % __version__
 DEFAULTS={
           "polling_interval": 30
           ,"ppid": None
@@ -27,10 +27,9 @@ DEFAULTS={
 
 def main():
     try:
-        import jlddk.do_setup
+        import jlddk.do_setup  #@UnusedImport
         import logging
-        import jlddk.do_checks
-        from jlddk.tools_sys import info_dump, dnorm
+        import jlddk.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         
@@ -41,12 +40,11 @@ def main():
         parser.add_argument('-p',    dest='polling_interval',    type=int, help="Polling interval", default=DEFAULTS["polling_interval"])
         parser.add_argument('-ppid', dest='ppid',    type=int, help="Restrict to parent pid", default=DEFAULTS["ppid"])
         
-        args=parser.parse_args()
-        
-        info_dump(vars(args), 20)
-        
         from jlddk.script_pclean import run
-        run(**dnorm(vars(args)))
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
+
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

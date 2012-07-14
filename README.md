@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.6.0: standardized log parameters, fixed bug in jldclock
+
 0.5.1: added new options to jldclock
 
 0.5.0: added 'jldstrpkg' and version # to all scripts

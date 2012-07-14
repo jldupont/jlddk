@@ -26,6 +26,9 @@ class FilterDuplicates(logging.Filter):
     occured=[]
     
     def filter(self, record):
+        if record.levelname=="DEBUG":
+            return 1
+        
         try:
             bits=record.getMessage().split(":")
             signature_hash=hashlib.md5(bits[0]).hexdigest()

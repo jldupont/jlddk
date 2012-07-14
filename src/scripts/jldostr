@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
@@ -15,11 +15,11 @@ except:
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jlddk
+    import jlddk #@UnusedImport
 
 ########################################################################
 
-DESC="Outputs a string at regular interval on stdout - v%s" % __version__
+DESC="""Outputs a string at regular interval on stdout - v%s""" % __version__
 DEFAULTS={
           "polling_interval": 30
           }
@@ -30,23 +30,15 @@ def main():
         import logging
         import jlddk.do_checks #@UnusedImport
         
-        from jlddk.tools_sys import info_dump, dnorm
-        from jlddk.tools_logging import setloglevel
-        
-        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
 
         parser.add_argument('-ostr', dest='ostr', type=str, help="String to output", required=True)
         
         parser.add_argument('-p',    dest='polling_interval',  type=int, help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
-        parser.add_argument('-ll',   dest='log_level',  type=str, help="Log Level", default="info", choices=["debug", "info", "warning", "error"])
-        
-        args=dnorm(vars(parser.parse_args()))
-        
-        setloglevel(args["log_level"])
-        info_dump(args, 20)
 
         from jlddk.script_ostr import run
-        
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
         run(**args)
 
     except KeyboardInterrupt:

@@ -4,17 +4,12 @@
 """
 import pyinotify
 import logging, sys, json
-from tools_logging import setloglevel
 from tools_misc import retry
 
 
-def run(path_source=None, loglevel="info", logconfig=None):
+def run(path_source=None
+        ,**_):
     
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
-
     wm = pyinotify.WatchManager()
     
     def set_watch():

@@ -37,7 +37,6 @@ import logging, sys, json, os
 import types
 
 from tools_sys import BrokenPipe
-from tools_logging import setloglevel
 from tools_func import transition_manager
 
 from pyfnc import pattern, patterned, dic
@@ -45,15 +44,8 @@ from pyfnc import pattern, patterned, dic
 MTYPES=["task", "done", "error", "worker", "none"]
 
 def run(args
-        ,logconfig=None
-        ,loglevel=None
         ,**_ 
         ):
-    
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
     
     def dp(msg):
         def _(state):

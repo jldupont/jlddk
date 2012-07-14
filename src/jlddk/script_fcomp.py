@@ -14,6 +14,7 @@ def run(list_matches=None,
         path_a=None,
         path_b=None,
         verbose=None
+        ,**_
         ):
 
     try:

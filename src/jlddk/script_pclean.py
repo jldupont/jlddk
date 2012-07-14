@@ -11,8 +11,8 @@ def run(prefix=None, polling_interval=None
         ,force_kill=None
         ,username=None
         ,ppid=None
+        ,**_
         ):
-
 
     def prefix_match(entry):
         if prefix is None:

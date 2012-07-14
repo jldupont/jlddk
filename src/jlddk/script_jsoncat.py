@@ -6,7 +6,6 @@ import logging, sys, json, os
 from time import sleep
 from tools_os import mkdir_p, get_root_files, file_contents
 from tools_os import rm, can_write, resolve_path, move
-from tools_logging import setloglevel
 from tools_func import check_transition
 
 def stdout(jo):
@@ -16,15 +15,12 @@ class BrokenPipe(Exception): pass
 
 
 def run(source_path=None, move_path=None, check_path=None, 
-        batch_size=5, loglevel="info", logconfig=None, polling_interval=None, enable_delete=False):
+        batch_size=5, 
+        polling_interval=None, enable_delete=False
+        ,**_):
 
     if check_path is not None:
         ct=check_transition()
-
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
 
     if enable_delete and move_path is not None:
         raise Exception("Options '-mp' and '-d' are mutually exclusive")

@@ -4,18 +4,12 @@
 """
 import logging, sys, os, json
 from tools_os import atomic_write, can_write
-from tools_logging import setloglevel
 from tools_web import fetch
 
 
-def run(dest_path=None, 
-        loglevel="info", logconfig=None):
+def run(dest_path=None 
+        ,**_):
     
-    if logconfig is not None:
-        logging.config.fileConfig(logconfig)
-
-    setloglevel(loglevel)
-
     if dest_path is not None:
         if not os.path.isdir(dest_path):
             raise Exception("Expecting a valid destination path '%s'" % dest_path)

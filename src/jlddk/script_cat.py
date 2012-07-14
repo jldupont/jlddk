@@ -17,7 +17,6 @@ def run(path_source=None,
         ignore_fault=False,
         verbose=False,
         rm_ext=False
-        ,loglevel=None
         ,**_
         ):
     

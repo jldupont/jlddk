@@ -6,7 +6,6 @@ import logging, sys, json, os
 from time import sleep
 from tools_os import get_root_files
 from tools_os import resolve_path
-from tools_logging import setloglevel
 from tools_func import doOnTransition, transition_manager
 from tools_misc import check_if_ok
 from tools_func import check_transition
@@ -23,8 +22,13 @@ def wlog(path):
 def stdoutf():
     sys.stdout.flush()
     
-def stdout(jo):
+def stdoutj(jo):
     try:    sys.stdout.write(json.dumps(jo)+"\n")
+    except: 
+        raise BrokenPipe("...broken pipe")
+    
+def stdout(m):
+    try:    sys.stdout.write(m+"\n")
     except: 
         raise BrokenPipe("...broken pipe")
 
@@ -34,6 +38,7 @@ def run(primary_path=None, compare_path=None,
         ,topic_name=None
         ,exts=None
         ,wait_status=None, polling_interval=None
+        ,just_zppp=None, just_ppzp=None, just_com=None
         ,**_):
 
     if check_path is not None:
@@ -55,14 +60,18 @@ def run(primary_path=None, compare_path=None,
 
     ### context for logging etc.
     ctx={
-         "pp": primary_path
-         ,"cp": compare_path
+          "just_zppp": just_zppp
+         ,"just_ppzp": just_ppzp
+         ,"just_com": just_com
+         ,"just_list": just_zppp or just_ppzp or just_com
+         ,"pp": primary_path
+         ,"zp": compare_path
          ,"sp": status_path
          
          ,"pp_log" :{"up":    partial(ilog, primary_path)
                      ,"down":  partial(wlog, primary_path)
                      }
-         ,"cp_log" :{"up":    partial(ilog, compare_path)
+         ,"zp_log" :{"up":    partial(ilog, compare_path)
                      ,"down":  partial(wlog, compare_path)
                      }
          ,"topic_name": topic_name
@@ -121,7 +130,7 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
     ### output some log info on transitions
     tm=ctx["tm"]
     tm.send(("pp_log", codep=="ok"))
-    tm.send(("cp_log", codec=="ok"))
+    tm.send(("zp_log", codec=="ok"))
     
     ### not much to do if either path isn't accessible...
     if not codep.startswith("ok") or not codec.startswith("ok"):
@@ -148,9 +157,9 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
         
         diff={
                "pp":     primary_path
-              ,"cp":     compare_path
-              ,"pp-cp":  list(setpf-setcf)
-              ,"cp-pp":  list(setcf-setpf)
+              ,"zp":     compare_path
+              ,"pp-zp":  list(setpf-setcf)
+              ,"zp-pp":  list(setcf-setpf)
               ,"common": list(common)
               }
         
@@ -158,8 +167,11 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
         if topic_name is not None:
             diff["topic"]=topic_name
         
-        stdout(diff)
-        stdoutf()
+        if ctx["just_list"]:
+            doout(ctx, diff)
+        else:
+            stdoutj(diff)
+            stdoutf()
     except Exception, e:
         logging.error("Can't compute diff between paths: %s" % str(e))
 
@@ -177,7 +189,23 @@ def maybe_process_nok(ctx, _nok, _msg, _x, _y, _bn):
 @patterned
 def maybe_process(ctx, code, msg, primary_path, compare_path, just_basename): pass
 
-        
-        
-        
+
+def doout(ctx, listes):
+
+    if ctx["just_zppp"]:
+        for e in listes["zp-pp"]:
+            stdout(e)
+            stdoutf()
+
+    if ctx["just_ppzp"]:
+        for e in listes["pp-zp"]:
+            stdout(e)
+            stdoutf()
+    
+    if ctx["just_com"]:
+        for e in listes["common"]:
+            stdout(e)
+            stdoutf()
+
+    
 

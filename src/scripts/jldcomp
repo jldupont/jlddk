@@ -8,7 +8,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.2"
+__version__="0.3"
 import os, sys, argparse
 op=os.path
 
@@ -39,14 +39,18 @@ def main():
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-pp',  dest='primary_path',  type=str, help="Primary path", required=True)
         parser.add_argument('-zp',  dest='compare_path',  type=str, help="Compare path", required=True)
+        
         parser.add_argument('-sf',  dest='status_filename',  type=str, help="Filename of status file", default=DEFAULTS["status_filename"])
         parser.add_argument('-wsf', dest='wait_status',    action="store_true", help="Wait on status file", default=DEFAULTS["wait_status"])
         
-        parser.add_argument('-exts',dest='exts',             type=str, nargs="+", help="Extensions to process (optional, default is all)", default=None)
-        parser.add_argument('-tp',  dest='topic_name',       type=str, help="Topic name to include in output JSON", default=None)
+        parser.add_argument('-exts',  dest='exts',             type=str, nargs="+", help="Extensions to process (optional, default is all)", default=None)
+        parser.add_argument('-tp',    dest='topic_name',       type=str, help="Topic name to include in output JSON", default=None)
         
-        parser.add_argument('-cp',  dest='check_path',       type=str, help="Check path")
-        parser.add_argument('-jbn', dest='just_basename',    action="store_true", help="Just compare basename", default=False)
+        parser.add_argument('-cp',    dest='check_path',       type=str, help="Check path")
+        parser.add_argument('-jbn',   dest='just_basename',    action="store_true", help="Just compare basename", default=False)
+        parser.add_argument('-jzppp', dest='just_zppp',        action="store_true", help="Just output 'zp-pp'", default=False)
+        parser.add_argument('-jppzp', dest='just_ppzp',        action="store_true", help="Just output 'pp-zp'", default=False)
+        parser.add_argument('-jcom',  dest='just_com',         action="store_true", help="Just output common set", default=False)
                 
         parser.add_argument('-p',   dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
         

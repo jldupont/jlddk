@@ -38,9 +38,9 @@ def run(topic_name=None
             logging.warning("Parent terminated... exiting")
             break
 
-        min_marker=False
-        hour_marker=False
-        day_marker=False
+        d["min_marker"]=False
+        d["hour_marker"]=False
+        d["day_marker"]=False
         
         sec=d["sec"]+1
         d["min_marker"]=(sec==60)
@@ -69,11 +69,11 @@ def run(topic_name=None
             stdout(d)
             
             if separate_msg_marker:
-                if min_marker:
+                if d["min_marker"]:
                     stdout({"topic":"min_marker"})
-                if hour_marker:
+                if d["hour_marker"]:
                     stdout({"topic":"hour_marker"})
-                if day_marker:
+                if d["day_marker"]:
                     stdout({"topic":"day_marker"})
         except:
             raise Exception("Exiting... probably broken pipe")

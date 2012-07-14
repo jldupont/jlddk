@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.6.1"
+__version__ ="0.6.2"
 
 
 from distutils.core import setup
@@ -41,6 +41,7 @@ Robots
 * jldstatsubdirs: periodic status information on sub-dirs of path (JSON output & pass-through stdin-->stdout)
 * jlddebouncer: debounces {key:value} pairs (JSON output & pass-through stdin-->stdout)
 * jldrun : periodically run a python callable
+* jldtouch: receive filename from stdin, 'touch' filename in destination path
 
 Configuration
 -------------
@@ -74,6 +75,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldstatsubdirs',
                      'src/scripts/jlddebouncer',
                      'src/scripts/jldrun',
+                     'src/scripts/jldtouch',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

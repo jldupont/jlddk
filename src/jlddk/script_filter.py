@@ -16,6 +16,21 @@ def run(module=None, function=None, function_args=None,
     except:
         raise Exception("%s.%s isn't callable..." %(module, function))
 
+    try:                
+        init_function_name="%s_init" % function
+        logging.info("Preparing init '%s' from module '%s'" % (init_function_name, module))
+        _mod, fnc_init=prepare_callable(module, init_function_name)
+    except Exception,e:
+        logging.info("No or errored init function...: %s" % e)
+        fnc_init=None
+
+    if fnc_init is not None:
+        try:
+            logging.debug("Calling init function...")
+            fnc_init(*function_args)
+        except:
+            raise Exception("Error calling init function")
+
     ppid=os.getppid()            
     logging.info("Process pid: %s" % os.getpid())
     logging.info("Parent pid : %s" % ppid)

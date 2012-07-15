@@ -58,13 +58,19 @@ def run(module=None, function=None, function_args=None,
             try:    logging.error("Error processing '%s' : %s" % (iline[:20], str(e)))
             except: pass
             continue
+
+        if oline is None:
+            logging.debug("No return value from called function")
+            continue
+        
+        try:
+            ostr=str(oline).strip("\n")
+        except:
+            logging.error("Error trying to stringify return string... continuing")
+            continue
             
-        if oline is not None:
-            try:
-                sys.stdout.write(oline)
-            except:
-                try:
-                    sys.stdout.write(str(oline)+"\n")
-                except:
-                    raise Exception("Exiting... probably broken pipe")
+        try:
+            sys.stdout.write(ostr+"\n")
+        except:
+            raise Exception("Exiting... probably broken pipe")
 

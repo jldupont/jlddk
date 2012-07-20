@@ -3,7 +3,7 @@
     @author: jldupont
 """
 import os, logging, glob
-from jlddk.tools_os import atomic_write, mkdir_p, file_contents, rm
+from jlddk.tools_os import atomic_write, mkdir_p, file_contents, rmdir
 from time import sleep
 
 class ExpOK(Exception): pass
@@ -78,7 +78,7 @@ def run(
             
             if len(fdirs)==0:
                 logging.debug("No directories to work on")
-                raise
+                raise ExpOK()
             
             wdir=os.path.join(spath, fdirs[0])
             logging.info("Progress> working on path: %s" % wdir)
@@ -99,14 +99,17 @@ def run(
             
             if delete_source_dir:
                 logging.info("Deleting source directory: %s" % wdir)
-                rm(wdir)
+                code, msg=rmdir(wdir)
+                if not code.startswith("ok"):
+                    raise ExpWarning("Can't delete source directory: %s" % str(msg))
             
         except ExpWarning,e:
             logging.warning(e)
             
         except ExpOK,e:
-            logging.info(e)
+            pass
         
+        logging.info("Test Message")
         logging.debug("Sleeping for %s seconds..." % poll_interval)
         sleep(poll_interval)    
         
@@ -115,8 +118,20 @@ def process(dpath, _file, start_of_file):
     
     bn=os.path.basename(_file)
     odir=os.path.join(dpath, bn)
-    
     odirtemp=os.path.join(dpath, "~"+bn)
+    
+    if os.path.exists(odirtemp):
+        logging.info("Deleting output temporary directory: %s" % odirtemp)
+        code, _msg=rmdir(odirtemp)
+        if not code.startswith("ok"):
+            logging.warning("Can't remove temporary directory... trying to proceed anyways")   
+
+    if os.path.exists(odir):
+        logging.info("Deleting output directory: %s" % odir)
+        code, _msg=rmdir(odir)
+        if not code.startswith("ok"):
+            logging.warning("Can't remove output directory... trying to proceed anyways")   
+    
     logging.info("Creating output temporary directory name: %s" % odirtemp)
     code, _=mkdir_p(odirtemp)
     
@@ -146,7 +161,7 @@ def process(dpath, _file, start_of_file):
             
     write_file(index, buf, bn, odirtemp)
     
-    logging.info("Renaming directory... %s => %s" % (odirtemp, odir))
+    logging.info("Renaming directory: %s => %s" % (odirtemp, odir))
     try:
         os.rename(odirtemp, odir)
     except:
@@ -160,15 +175,15 @@ def write_file(index, buf, bn, dpath):
         return
     
     fn=bn+"_"+str(index)
-    logging.debug("Writing file %s => %s" % (index, fn))
+    logging.debug("Writing file: %s => %s" % (index, fn))
     
     contents="\n".join(buf)
     
     fp=os.path.join(dpath, fn)
     code, _=atomic_write(fp, contents)
     if not code.startswith("ok"):
-        raise ExpWarning("Can't write to %s" % fp)
+        raise ExpWarning("Can't write to: %s" % fp)
 
-    logging.debug("Wrote file %s" % fp)
+    logging.debug("Wrote file: %s" % fp)
     
 

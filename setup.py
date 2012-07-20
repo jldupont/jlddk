@@ -42,6 +42,7 @@ Robots
 * jlddebouncer: debounces {key:value} pairs (JSON output & pass-through stdin-->stdout)
 * jldrun : periodically run a python callable
 * jldtouch: receive filename from stdin, 'touch' filename in destination path
+* jldsplitter: a semi customizable file splitter
 
 Configuration
 -------------

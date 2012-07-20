@@ -2,7 +2,7 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import os, errno, tempfile, types
+import os, errno, tempfile, types, shutil
 import subprocess
 
 from pyfnc import patterned, pattern, partial
@@ -210,6 +210,15 @@ def rm(path):
         if exc.errno==errno.ENOENT:
             return ('ok', path)
         return ("error", (exc.errno, errno.errorcode[exc.errno]))
+
+
+def rmdir(path):
+    try:
+        shutil.rmtree(path)
+        return ("ok", None)
+    except Exception,e:
+        return ("error", e)
+
 
 def can_write(path):
     """

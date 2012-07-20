@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+"""
+    jldsplitter
+
+    @author: Jean-Lou Dupont
+"""
+__version__="0.1"
+import os, sys, argparse
+op=os.path
+
+try:
+    import jlddk #@UnusedImport
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk #@UnusedImport
+
+########################################################################
+
+DESC="""Splits a file based on a start-of-file delimiter - v%s
+
+This script is mainly targetted at splitting a "concatenated" file made of a collection of files with the same "start-of-file" delimiter.
+E.g. a bunch of xml files
+
+The source path will be inspected recursively up to 1 level down. Path with a starting ~ will be ignored.
+
+The resulting files will be written to a directory in the destination path 'path_dest'. 
+The directory will be named "~$file_basename" during the split operation.
+Once the operation is completed, the directory will be renamed to "$file_basename".
+
+In other words: all 1st level child directories of 'path_src' will be inspected for "file_input_pattern" files.
+""" % __version__
+
+def main():
+    try:
+        import jlddk.do_setup  #@UnusedImport
+        import logging
+        import jlddk.do_checks #@UnusedImport
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
+        
+        parser.add_argument('-ds',   dest='path_src',      type=str,  help="Source path", required=True)
+        parser.add_argument('-dp',   dest='path_dest',     type=str,  help="Destination path", required=True)
+        parser.add_argument('-dsd',  dest='delete_source_dir', action="store_true",  help="Delete source directory", default=False)
+        
+        parser.add_argument('-sof',  dest='start_of_file', type=str,  help="Start-of-file pattern", required=True)
+        
+        parser.add_argument('-p',    dest='poll_interval', type=int,  help="Polling interval (seconds)", default=30)
+        
+        parser.add_argument('-oext', dest='file_output_ext', type=str,  help="File extension for output files", default="")
+        parser.add_argument('-ipat', dest='file_input_pattern',  type=str,  help="Pattern for input files", default="*")
+        
+        from jlddk.script_splitter import run
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

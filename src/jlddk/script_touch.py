@@ -19,13 +19,15 @@ def run(
     logging.info("Resolving destination path: %s" % path_dest)
     try:
         apath=os.path.abspath(path_dest)
-        path=apath.strip("\"'")
-        path=os.path.expanduser(os.path.expandvars(path))
+        dpath=apath.strip("\"'")
+        dpath=os.path.expanduser(os.path.expandvars(dpath))
     except:
-        raise Exception("Can't resolve path")
+        raise Exception("Can't destination resolve path")
+    
+    logging.info("Resolved destination path: %s" % dpath)
 
     logging.info("Creating destination, if required...")
-    mkdir_p(path_dest)
+    mkdir_p(dpath)
 
     ppid=os.getppid()        
     logging.info("Process pid: %s" % os.getpid())
@@ -51,7 +53,7 @@ def run(
         else:
             filename=iline
             
-        path=os.path.join(path_dest, filename)
+        path=os.path.join(dpath, filename)
         
         code, _=touch(path)
         if not code.startswith("ok"):

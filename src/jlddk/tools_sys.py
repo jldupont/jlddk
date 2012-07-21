@@ -2,7 +2,7 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import json, sys, re
+import json, sys, re, os
 import types
 import logging
 import importlib
@@ -25,9 +25,21 @@ def process_command_line(parser):
     info_dump(args, 20)
     return args
 
+def raise_if_not_ok(code, msg):
+    if not code.startswith("ok"):
+        raise Exception(msg)
+
 
 def _echo(*pargs, **kargs):
     print pargs, kargs
+
+def prepare_callable_from_string(st):
+    """
+    mod.fnc
+    """
+    mod, fnc=os.path.splitext(st)
+    return prepare_callable(mod, fnc.strip("."))
+
 
 def prepare_callable(module_name, function_name):
     try:
@@ -38,7 +50,7 @@ def prepare_callable(module_name, function_name):
     try:
         fnc=getattr(mod, function_name)
     except:
-        raise Exception("Module '%s' doesn't have a 'run' function" % mod)
+        raise Exception("Module '%s' doesn't have a '%s' function" % (mod, function_name))
     
     if not callable(fnc):
         raise Exception("Can't call 'run' function of callable '%S'" % module_name)

@@ -18,3 +18,9 @@ try:
     import pyfnc
 except:
     raise Exception("* package 'pyfnc' required - get it from Pypi\n" )
+
+
+try:
+    import yaml
+except:
+    raise Exception("* package 'pyyaml' required - get it from Pypi\n" )

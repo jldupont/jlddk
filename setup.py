@@ -75,6 +75,7 @@ setup(name=         'jlddk',
                      'src/scripts/jldostr',
                      'src/scripts/jldstatsubdirs',
                      'src/scripts/jlddebouncer',
+                     'src/scripts/jldarun',
                      'src/scripts/jldrun',
                      'src/scripts/jldtouch',
                      'src/scripts/jldsplitter',
@@ -83,6 +84,7 @@ setup(name=         'jlddk',
       ,install_requires=["pyfnc >= 0.1.0"
                          ,"psutil"
                          ,"pyinotify"
+                         ,"pyyaml >= 3.10"
                          ]
       ,long_description=DESC
       )

@@ -1,0 +1,7 @@
+#
+#  jldarun example config file
+#
+#
+agents:
+  agent1: jlddk.agents.test.echo
+  agent2: jlddk.agents.test.echo

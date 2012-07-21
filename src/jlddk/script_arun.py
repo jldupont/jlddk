@@ -72,6 +72,9 @@ def run( path_config=None
                 logging.warning(e)
             except ExcErr,e:
                 logging.error(e)
+            except ExcCrit,e:
+                logging.error(e)
+                return                
             except ExcQuit:
                 return
             except Exception,e:

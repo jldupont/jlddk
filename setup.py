@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.6.6"
+__version__ ="0.6.7"
 
 
 from distutils.core import setup
@@ -77,6 +77,7 @@ setup(name=         'jlddk',
                      'src/scripts/jlddebouncer',
                      'src/scripts/jldrun',
                      'src/scripts/jldtouch',
+                     'src/scripts/jldsplitter',
                      ],                     
       zip_safe=False
       ,install_requires=["pyfnc >= 0.1.0"

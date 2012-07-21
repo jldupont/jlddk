@@ -51,7 +51,7 @@ def run( path_config=None
         try:     
             msg=mqueue.pop()
         except:
-            raise Exception("No more messages in queue: %s" % e)
+            raise Exception("No more messages in queue")
         
         try:    topic=msg["topic"]
         except: 

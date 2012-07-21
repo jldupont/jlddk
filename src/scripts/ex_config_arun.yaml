@@ -3,5 +3,5 @@
 #
 #
 agents:
-  agent1: jlddk.agents.test.echo
-  agent2: jlddk.agents.test.echo
+  agent1: jlddk.agents.test
+  agent2: jlddk.agents.test2

@@ -40,6 +40,13 @@ def prepare_callable_from_string(st):
     mod, fnc=os.path.splitext(st)
     return prepare_callable(mod, fnc.strip("."))
 
+def prepare_mod(module_name):
+    try:
+        mod=importlib.import_module(module_name)
+    except:
+        raise Exception("Can't import module '%s'" % module_name)
+    return mod
+
 
 def prepare_callable(module_name, function_name):
     try:

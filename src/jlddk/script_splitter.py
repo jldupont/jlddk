@@ -157,7 +157,7 @@ def process(dpath, _file, start_of_file, file_output_ext):
             index=index+1
             continue
         else:
-            buf.append(line)
+            buf.append(line.strip())
             
     write_file(index, buf, bn, odirtemp, file_output_ext)
     try:

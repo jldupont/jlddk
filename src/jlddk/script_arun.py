@@ -61,7 +61,9 @@ def run( path_config=None
         for module_name, vtable, _module in entries:
             fnc=vtable.get(topic, None)
             if fnc is None:
-                continue
+                fnc=vtable.get("*", None)
+                if fnc is None:
+                    continue
             try:
                 fnc(mqueue, msg)
             except ExcInfo, e:

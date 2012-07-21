@@ -73,10 +73,9 @@ def run( path_config=None
             except ExcErr,e:
                 logging.error(e)
             except ExcCrit,e:
-                logging.error(e)
-                break                
+                raise               
             except ExcQuit:
-                break
+                raise KeyboardInterrupt()
             except Exception,e:
                 logging.error(e)
             

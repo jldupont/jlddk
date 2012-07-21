@@ -139,19 +139,18 @@ def process(dpath, _file, start_of_file, file_output_ext):
     if not code.startswith("ok"):
         raise ExpWarning("Can't create temporary output directory: %s" % odirtemp)
     
+    #########################
+    
+    
     try:
-        logging.debug("Getting file contents for: %s" % _file)
-        code, contents=file_contents(_file)
-        if not code.startswith("ok"):
-            raise
+        logging.debug("Opening file: %s" % _file)
+        fh=open(_file)
     except:
-        raise ExpWarning("Can't get file contents: %s" % _file)
+        raise ExpWarning("Can't open file: %s" % _file)
 
-    contents=contents.split("\n")
-    logging.debug("File contains %s lines" % len(contents))
     buf=[]
     index=0
-    for line in contents:
+    for line in fh:
         if line.startswith(start_of_file):
             write_file(index, buf, bn, odirtemp, file_output_ext)
             buf=[line,]           
@@ -161,6 +160,10 @@ def process(dpath, _file, start_of_file, file_output_ext):
             buf.append(line)
             
     write_file(index, buf, bn, odirtemp, file_output_ext)
+    try:
+        fh.close()
+    except:
+        pass
     
     logging.info("Renaming directory: %s => %s" % (odirtemp, odir))
     try:

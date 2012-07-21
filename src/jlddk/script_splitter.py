@@ -81,42 +81,43 @@ def run(
                 raise ExpOK()
             
             wdir=os.path.join(spath, fdirs[0])
-            logging.info("Progress> working on path: %s" % wdir)
+            logging.debug("Working on path: %s" % wdir)
             
             try:
                 files=glob.glob(wdir+os.path.sep+file_input_pattern)
                 files=filter(os.path.isfile, files)
-                logging.debug("Got %s file(s) in selected dir" % len(files))
+                logging.debug("Got: %s file(s) in selected dir" % len(files))
             except:
                 raise ExpWarning("Can't glob files...")
             
             for _file in files:
-                logging.debug("Processing '%s'" % _file)
-                num_files=process(dpath, _file, start_of_file)
+                logging.info("Processing: '%s'" % _file)
+                num_files=process(dpath, _file, start_of_file, file_output_ext)
                 logging.info("Progress> processed 1 concatenated file with '%s' files" % num_files)
                 
-            logging.info("Progress> processed %s files" % len(files))
-            
-            if delete_source_dir:
-                logging.info("Deleting source directory: %s" % wdir)
-                code, msg=rmdir(wdir)
-                if not code.startswith("ok"):
-                    raise ExpWarning("Can't delete source directory: %s" % str(msg))
-            
+            if len(files)>0:
+                logging.info("Progress> processed %s files" % len(files))
+                
+                if delete_source_dir:
+                    logging.info("Deleting source directory: %s" % wdir)
+                    code, msg=rmdir(wdir)
+                    if not code.startswith("ok"):
+                        raise ExpWarning("Can't delete source directory: %s" % str(msg))
+                                
         except ExpWarning,e:
             logging.warning(e)
             
         except ExpOK,e:
             pass
         
-        logging.info("Test Message")
         logging.debug("Sleeping for %s seconds..." % poll_interval)
         sleep(poll_interval)    
         
 
-def process(dpath, _file, start_of_file):
+def process(dpath, _file, start_of_file, file_output_ext):
     
-    bn=os.path.basename(_file)
+    fn=os.path.splitext(_file)[0]
+    bn=os.path.basename(fn)
     odir=os.path.join(dpath, bn)
     odirtemp=os.path.join(dpath, "~"+bn)
     
@@ -152,14 +153,14 @@ def process(dpath, _file, start_of_file):
     index=0
     for line in contents:
         if line.startswith(start_of_file):
-            write_file(index, buf, bn, odirtemp)
+            write_file(index, buf, bn, odirtemp, file_output_ext)
             buf=[line,]           
             index=index+1
             continue
         else:
             buf.append(line)
             
-    write_file(index, buf, bn, odirtemp)
+    write_file(index, buf, bn, odirtemp, file_output_ext)
     
     logging.info("Renaming directory: %s => %s" % (odirtemp, odir))
     try:
@@ -170,11 +171,11 @@ def process(dpath, _file, start_of_file):
     return index
         
         
-def write_file(index, buf, bn, dpath):
+def write_file(index, buf, bn, dpath, file_output_ext):
     if len(buf)==0:
         return
     
-    fn=bn+"_"+str(index)
+    fn=bn+"_"+str(index)+"."+file_output_ext
     logging.debug("Writing file: %s => %s" % (index, fn))
     
     contents="\n".join(buf)

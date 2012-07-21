@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.7.1: added ctx (context data) to jldarun
+
 0.7.0: added "jldarun"
 
 0.6.5: added "jldsplitter"

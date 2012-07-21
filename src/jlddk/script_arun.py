@@ -46,7 +46,7 @@ def run( path_config=None
         
     logging.info("Loaded %s agents" % len(agents))
     
-    mqueue=[{"topic": "init"},]
+    mqueue=[{"topic": "init", "ctx": cdata},]
     while True:
         try:     
             msg=mqueue.pop()

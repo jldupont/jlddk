@@ -50,10 +50,12 @@ def run( path_config=None
     while True:
         try:     
             msg=mqueue.pop()
-        except Exception,e:  raise Exception("No more messages in queue: %s" % e)
+        except:
+            raise Exception("No more messages in queue: %s" % e)
         
-        try: topic=msg["topic"]
-        except: raise Exception("Message is missing 'topic' field...")
+        try:    topic=msg["topic"]
+        except: 
+            raise Exception("Message is missing 'topic' field...")
         
         ### broadcast the msg to all agents
         for module_name, vtable, _module in entries:
@@ -69,7 +71,6 @@ def run( path_config=None
             except ExcErr,e:
                 logging.error(e)
             except ExcQuit:
-                logging.info("Quitting...")
                 return
             except Exception,e:
                 logging.error(e)

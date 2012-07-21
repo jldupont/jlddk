@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.6.9"
+__version__ ="0.7.0"
 
 
 from distutils.core import setup
@@ -40,6 +40,7 @@ Robots
 * jldostr : outputs a string on stdout @ regular interval, pass-through for stdin-->stdout
 * jldstatsubdirs: periodic status information on sub-dirs of path (JSON output & pass-through stdin-->stdout)
 * jlddebouncer: debounces {key:value} pairs (JSON output & pass-through stdin-->stdout)
+* jldarun : runs "agents"
 * jldrun : periodically run a python callable
 * jldtouch: receive filename from stdin, 'touch' filename in destination path
 * jldsplitter: a semi customizable file splitter

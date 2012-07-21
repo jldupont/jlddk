@@ -9,7 +9,7 @@ def init(_q, *p):
     print "test2.init", p
 
 def tick(_q, _):
-    logging.debug("test2: tick!")
+    logging.info("test2: tick!")
 
 
 

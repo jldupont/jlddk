@@ -9,4 +9,6 @@ class ExcWarn(Exception): pass
 
 class ExcErr(Exception): pass
 
+class ExcCrit(Exception): pass
+
 class ExcQuit(Exception): pass

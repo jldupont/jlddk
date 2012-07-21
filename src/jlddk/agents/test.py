@@ -11,7 +11,7 @@ def init(mqueue, _msg):
     mqueue.append({"topic": "tick"})
 
 def tick(mqueue, _):
-    logging.info("progress: tick!")
+    logging.info("test: tick!")
     sleep(1)
     mqueue.append({"topic": "tick"})
 

@@ -74,9 +74,9 @@ def run( path_config=None
                 logging.error(e)
             except ExcCrit,e:
                 logging.error(e)
-                return                
+                break                
             except ExcQuit:
-                return
+                break
             except Exception,e:
                 logging.error(e)
             

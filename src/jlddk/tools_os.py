@@ -44,7 +44,7 @@ def file_contents(path):
         except:
             pass
 
-def atomic_write(path, contents):
+def atomic_write(path, contents, tmppath=None):
     """
     Atomic write to file
     
@@ -55,7 +55,7 @@ def atomic_write(path, contents):
     ('ok', ...
     """
     
-    dn=os.path.dirname(path)
+    dn=tmppath or os.path.dirname(path)
     fd, tfn=tempfile.mkstemp(dir=dn)
     
     try:

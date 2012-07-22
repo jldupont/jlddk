@@ -16,3 +16,4 @@ war/
 *.egg-info
 /result.txt
 /build
+/build

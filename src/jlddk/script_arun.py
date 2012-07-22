@@ -49,7 +49,7 @@ def run( path_config=None
     mqueue=[{"topic": "init", "ctx": cdata},]
     while True:
         try:     
-            msg=mqueue.pop()
+            msg=mqueue.pop(0)
         except:
             raise Exception("No more messages in queue")
         

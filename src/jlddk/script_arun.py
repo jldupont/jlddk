@@ -40,7 +40,7 @@ def run( path_config=None
             vtable=getattr(mod, "__vtable__")
         except:
             raise Exception("Can't find '__vtable__' in agent's module")
-        entries.append((module_name, vtable, mod))
+        entries.append((agent_name, module_name, vtable, mod))
         
             
         
@@ -58,7 +58,7 @@ def run( path_config=None
             raise Exception("Message is missing 'topic' field...")
         
         ### broadcast the msg to all agents
-        for module_name, vtable, _module in entries:
+        for agent_name, module_name, vtable, _module in entries:
             fnc=vtable.get(topic, None)
             if fnc is None:
                 fnc=vtable.get("*", None)
@@ -67,17 +67,17 @@ def run( path_config=None
             try:
                 fnc(mqueue, msg)
             except ExcInfo, e:
-                logging.info(e)
+                logging.info("(%s) %s" % (agent_name, e))
             except ExcWarn, e:
-                logging.warning(e)
+                logging.warning("(%s) %s" % (agent_name, e))
             except ExcErr,e:
-                logging.error(e)
+                logging.error("(%s) %s" % (agent_name, e))
             except ExcCrit,e:
                 raise               
             except ExcQuit:
                 raise KeyboardInterrupt()
             except Exception,e:
-                logging.error(e)
+                logging.error("(%s) %s" % (agent_name, e))
             
         
         

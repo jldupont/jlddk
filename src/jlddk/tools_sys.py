@@ -7,7 +7,7 @@ import types
 import logging
 import importlib
 
-from jlddk.tools_logging import setloglevel, enable_duplicates_filter
+from jlddk.tools_logging import setloglevel, enable_duplicates_filter, setup_syslog
 
 class BrokenPipe(Exception): pass
 
@@ -16,10 +16,14 @@ def process_command_line(parser):
     parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
     parser.add_argument('-ll',  dest='log_level',     type=str,            help="Log Level", default="info", choices=["debug", "info", "warning", "error"])
     parser.add_argument('-kdf', dest='log_keepdup',   action="store_true", help="Keep duplicate log entries", default=False)
+    parser.add_argument('-lsl', dest='log_syslog',    action="store_true", help="Enable syslog", default=False)
     args=dnorm(vars(parser.parse_args()))
     
     if (not args["log_keepdup"]):
         enable_duplicates_filter()
+        
+    if (args["log_syslog"]):
+        setup_syslog()
         
     setloglevel(args["log_level"])
     info_dump(args, 20)

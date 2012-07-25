@@ -67,17 +67,17 @@ def run( path_config=None
             try:
                 fnc(mqueue, msg)
             except ExcInfo, e:
-                logging.info("(%s) %s" % (agent_name, e))
+                logging.info("(%s:%s) %s" % (agent_name, topic, e))
             except ExcWarn, e:
-                logging.warning("(%s) %s" % (agent_name, e))
+                logging.warning("(%s:%s) %s" % (agent_name, topic, e))
             except ExcErr,e:
-                logging.error("(%s) %s" % (agent_name, e))
+                logging.error("(%s:%s) %s" % (agent_name, topic, e))
             except ExcCrit,e:
                 raise               
             except ExcQuit:
                 raise KeyboardInterrupt()
             except Exception,e:
-                logging.error("(%s) %s" % (agent_name, e))
+                logging.error("(%s:%s) %s" % (agent_name, topic, e))
             
         
         

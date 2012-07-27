@@ -2,7 +2,7 @@
     Created on 2012-01-28
     @author: jldupont
 """
-import os,sys,logging, hashlib
+import os,sys,logging, hashlib, random
 from logging.handlers import SysLogHandler
 
 def setloglevel(level_name):
@@ -33,8 +33,10 @@ class FilterDuplicates(logging.Filter):
     def filter(self, record):
         if record.levelname=="DEBUG":
             return 1
+        
         msg=record.getMessage()
-        if msg.startswith("progress") or msg.startswith("Progress"):
+        
+        if msg.startswith("progress") or msg.startswith("Progress") or msg.startswith("PROGRESS"):
             return 1
         
         try:

@@ -36,10 +36,14 @@ def run(prefix=None, polling_interval=None
     logging.info("Starting loop...")
     while True:
         
-        plist=psutil.get_process_list()
-        flist=filter(filtre, plist)
+        #deprecated in psutil
+        #plist=psutil.get_process_list()
+        #flist=filter(filtre, plist)
         
-        for p in flist:
+        for p in psutil.process_iter():
+            if not filtre(p):
+                continue
+            
             cmdline=p.cmdline
             pid=p.pid
             user=p.username

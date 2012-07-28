@@ -32,8 +32,9 @@ def run(prefix=None, polling_interval=None
         return ppid_match and (name_match or pmatch) and user_match
 
 
-    ppid=os.getppid()        
-    logging.info("Process pid: %s" % os.getpid())
+    this_pid=os.getpid()
+    ppid=os.getppid()
+    logging.info("Process pid: %s" % this_pid)
     logging.info("Parent pid:  %s" % ppid)
     logging.info("Starting loop...")
     while True:
@@ -50,22 +51,25 @@ def run(prefix=None, polling_interval=None
             if filtre(p):                
                 cmdline=p.cmdline
                 pid=p.pid
-                user=p.username
-                
-                details="pid '%s' '%s' : %s" % (pid, user, cmdline)
-                
-                if not force_kill:
-                    logging.info("Would kill %s" % details)
-                else:
-                    try:
-                        os.kill(p.pid, signal.SIGTERM)
-                        logging.info("Killed %s" % details)
-                    except:
+
+                ## skip ourself!                
+                if pid != this_pid:
+                    user=p.username
+                    
+                    details="pid '%s' '%s' : %s" % (pid, user, cmdline)
+                    
+                    if not force_kill:
+                        logging.info("Would kill %s" % details)
+                    else:
                         try:
-                            os.kill(p.pid, signal.SIGKILL)
+                            os.kill(p.pid, signal.SIGTERM)
                             logging.info("Killed %s" % details)
                         except:
-                            logging.warning("Couldn't kill %s" % details)
+                            try:
+                                os.kill(p.pid, signal.SIGKILL)
+                                logging.info("Killed %s" % details)
+                            except:
+                                logging.warning("Couldn't kill %s" % details)
         
         logging.debug("Sleeping...")
         sleep(polling_interval)

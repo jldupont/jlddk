@@ -32,37 +32,42 @@ def run(prefix=None, polling_interval=None
         return ppid_match and (name_match or pmatch) and user_match
 
 
-
+    ppid=os.getppid()        
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid:  %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         #deprecated in psutil
         #plist=psutil.get_process_list()
         #flist=filter(filtre, plist)
         
         for p in psutil.process_iter():
-            if not filtre(p):
-                continue
             
-            cmdline=p.cmdline
-            pid=p.pid
-            user=p.username
-            
-            details="pid '%s' '%s' : %s" % (pid, user, cmdline)
-            
-            if not force_kill:
-                logging.info("Would kill %s" % details)
-            else:
-                try:
-                    os.kill(p.pid, signal.SIGTERM)
-                    logging.info("Killed %s" % details)
-                except:
+            if filtre(p):                
+                cmdline=p.cmdline
+                pid=p.pid
+                user=p.username
+                
+                details="pid '%s' '%s' : %s" % (pid, user, cmdline)
+                
+                if not force_kill:
+                    logging.info("Would kill %s" % details)
+                else:
                     try:
-                        os.kill(p.pid, signal.SIGKILL)
+                        os.kill(p.pid, signal.SIGTERM)
                         logging.info("Killed %s" % details)
                     except:
-                        logging.warning("Couldn't kill %s" % details)
+                        try:
+                            os.kill(p.pid, signal.SIGKILL)
+                            logging.info("Killed %s" % details)
+                        except:
+                            logging.warning("Couldn't kill %s" % details)
         
+        logging.debug("Sleeping...")
         sleep(polling_interval)
 
 

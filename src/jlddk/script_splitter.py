@@ -96,7 +96,7 @@ def run(
                 num_files=process(dpath, _file, start_of_file, file_output_ext)
                 logging.info("Progress> processed 1 concatenated file with '%s' files" % num_files)
                 if output_topic is not None:
-                    sys.stdout.write('''{"topic": "%s", "file": "%s", "count":"%s"}''' % (output_topic, _file, num_files))
+                    sys.stdout.write('''{"topic": "%s", "file": "%s", "count":"%s"}\n''' % (output_topic, _file, num_files))
                     sys.stdout.flush()
                 
             if len(files)>0:

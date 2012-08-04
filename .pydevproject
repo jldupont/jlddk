@@ -7,7 +7,5 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/jlddk/src</path>
 </pydev_pathproperty>
-<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-<path>/usr/local/lib/python2.7/dist-packages/PyYAML-3.10-py2.7-linux-x86_64.egg</path>
-</pydev_pathproperty>
+
 </pydev_project>

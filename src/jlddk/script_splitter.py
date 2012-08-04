@@ -2,8 +2,8 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import os, logging, glob
-from jlddk.tools_os import atomic_write, mkdir_p, file_contents, rmdir
+import os, logging, glob, sys
+from jlddk.tools_os import atomic_write, mkdir_p, rmdir
 from time import sleep
 
 class ExpOK(Exception): pass
@@ -17,6 +17,7 @@ def run(
         ,poll_interval=None
         ,start_of_file=None
         ,delete_source_dir=False
+        ,output_topic=None
         ,**_
         ):
     
@@ -94,6 +95,9 @@ def run(
                 logging.info("Processing: '%s'" % _file)
                 num_files=process(dpath, _file, start_of_file, file_output_ext)
                 logging.info("Progress> processed 1 concatenated file with '%s' files" % num_files)
+                if output_topic is not None:
+                    sys.stdout.write('''{"topic": "%s", "file": "%s", "count":"%s"}''' % (output_topic, _file, num_files))
+                    sys.stdout.flush()
                 
             if len(files)>0:
                 logging.info("Progress> processed %s files" % len(files))

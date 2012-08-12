@@ -33,12 +33,12 @@ def run(prefix=None, polling_interval=None
 
 
     this_pid=os.getpid()
-    ppid=os.getppid()
+    this_ppid=os.getppid()
     logging.info("Process pid: %s" % this_pid)
-    logging.info("Parent pid:  %s" % ppid)
+    logging.info("Parent pid:  %s" % this_ppid)
     logging.info("Starting loop...")
     while True:
-        if os.getppid()!=ppid:
+        if os.getppid()!=this_ppid:
             logging.warning("Parent terminated... exiting")
             break
         

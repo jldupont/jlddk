@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.7.18: small fix for pclean
+
 0.7.9: added support for 'syslog'
 
 0.7.1: added ctx (context data) to jldarun

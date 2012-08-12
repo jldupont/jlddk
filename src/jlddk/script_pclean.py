@@ -50,13 +50,12 @@ def run(prefix=None, polling_interval=None
             
             if filtre(p):                
                 cmdline=p.cmdline
-                pid=p.pid
 
                 ## skip ourself!                
-                if pid != this_pid:
+                if p.pid != this_pid:
                     user=p.username
                     
-                    details="pid '%s' '%s' : %s" % (pid, user, cmdline)
+                    details="pid '%s' '%s' : %s" % (p.pid, user, cmdline)
                     
                     if not force_kill:
                         logging.info("Would kill %s" % details)

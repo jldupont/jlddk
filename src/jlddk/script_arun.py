@@ -76,6 +76,8 @@ def run( path_config=None
                 raise               
             except ExcQuit:
                 raise KeyboardInterrupt()
+            except IOError:
+                raise
             except Exception,e:
                 logging.error("(%s:%s) %s" % (agent_name, topic, e))
             

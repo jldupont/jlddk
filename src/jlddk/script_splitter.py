@@ -81,32 +81,45 @@ def run(
                 logging.debug("No directories to work on")
                 raise ExpOK()
             
-            wdir=os.path.join(spath, fdirs[0])
-            logging.debug("Working on path: %s" % wdir)
+            ## Find at least 1 non-empty dir
+            while True:
+                try:    
+                    fdir=fdirs.pop(0)
+                except: 
+                    break
             
-            try:
-                files=glob.glob(wdir+os.path.sep+file_input_pattern)
-                files=filter(os.path.isfile, files)
-                logging.debug("Got: %s file(s) in selected dir" % len(files))
-            except:
-                raise ExpWarning("Can't glob files...")
-            
-            for _file in files:
-                logging.info("Processing: '%s'" % _file)
-                num_files=process(dpath, _file, start_of_file, file_output_ext)
-                logging.info("Progress> processed 1 concatenated file with '%s' files" % num_files)
-                if output_topic is not None:
-                    sys.stdout.write('''{"topic": "%s", "file": "%s", "count":"%s"}\n''' % (output_topic, _file, num_files))
-                    sys.stdout.flush()
+                wdir=os.path.join(spath, fdir)
+                logging.debug("Working on path: %s" % wdir)
                 
-            if len(files)>0:
-                logging.info("Progress> processed %s files" % len(files))
+                try:
+                    files=glob.glob(wdir+os.path.sep+file_input_pattern)
+                    files=filter(os.path.isfile, files)
+                    logging.debug("Got: %s file(s) in selected dir" % len(files))
+                except:
+                    raise ExpWarning("Can't glob files...")
                 
-                if delete_source_dir:
-                    logging.info("Deleting source directory: %s" % wdir)
-                    code, msg=rmdir(wdir)
-                    if not code.startswith("ok"):
-                        raise ExpWarning("Can't delete source directory: %s" % str(msg))
+                if files==[]:
+                    logging.debug("No files in %s... skipping to next" % fdir)
+                    continue
+                
+                for _file in files:
+                    logging.info("Processing: '%s'" % _file)
+                    num_files=process(dpath, _file, start_of_file, file_output_ext)
+                    logging.info("Progress> processed 1 concatenated file with '%s' files" % num_files)
+                    if output_topic is not None:
+                        sys.stdout.write('''{"topic": "%s", "file": "%s", "count":"%s"}\n''' % (output_topic, _file, num_files))
+                        sys.stdout.flush()
+                    
+                if len(files)>0:
+                    logging.info("Progress> processed %s files" % len(files))
+                    
+                    if delete_source_dir:
+                        logging.info("Deleting source directory: %s" % wdir)
+                        code, msg=rmdir(wdir)
+                        if not code.startswith("ok"):
+                            raise ExpWarning("Can't delete source directory: %s" % str(msg))
+                            
+                break
                                 
         except ExpWarning,e:
             logging.warning(e)

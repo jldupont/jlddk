@@ -8,12 +8,15 @@ import subprocess
 from pyfnc import patterned, pattern, partial
 
 
-def getsubdirs(path):
+def getsubdirs(path, max_entries=None):
     """
     >>> getsubdirs("/tmp")
     """
     try:
         paths=os.listdir(path)
+        if max_entries is not None:
+            paths=paths[0:max_entries]
+            
         paths=map(partial(os.path.join, path), paths)
         dirs=filter(os.path.isdir, paths)
         return ("ok", dirs)
@@ -157,7 +160,7 @@ def filter_files_by_ext(criteria, extlist, files):
     """
 
     
-def get_root_files(src_path, strip_dirname=False):
+def get_root_files(src_path, strip_dirname=False, max_entries=None):
     """
     Retrieve files from the root of src_path
     >> get_root_files("/tmp")
@@ -170,6 +173,8 @@ def get_root_files(src_path, strip_dirname=False):
     
     try:
         liste=os.listdir(src_path)
+        if max_entries is not None:
+            liste=liste[0:max_entries]
         liste=map(add_src_path, liste)        
         liste=filter(os.path.isfile, liste)
         

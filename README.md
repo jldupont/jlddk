@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.7.22: fixed pclean: caching of ppid value in psutil package caused malfunction
+
 0.7.18: small fix for pclean
 
 0.7.9: added support for 'syslog'

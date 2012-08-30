@@ -32,6 +32,7 @@ def run(prefix=None, polling_interval=None
         return ppid_match and (name_match or pmatch) and user_match
 
 
+    liste=[]
     this_pid=os.getpid()
     this_ppid=os.getppid()
     logging.info("Process pid: %s" % this_pid)
@@ -46,7 +47,10 @@ def run(prefix=None, polling_interval=None
         #plist=psutil.get_process_list()
         #flist=filter(filtre, plist)
         
-        for p in psutil.process_iter():
+        for proc in psutil.process_iter():
+            
+            ## make sure we get a fresh copy
+            p=psutil.Process(proc.pid)
             
             if filtre(p):                
                 cmdline=p.cmdline
@@ -56,21 +60,24 @@ def run(prefix=None, polling_interval=None
                     user=p.username
                     
                     details="pid '%s' '%s' : %s" % (p.pid, user, cmdline)
+                    do_kill(p.pid, details, force_kill)
                     
-                    if not force_kill:
-                        logging.info("Would kill %s" % details)
-                    else:
-                        try:
-                            os.kill(p.pid, signal.SIGTERM)
-                            logging.info("Killed %s" % details)
-                        except:
-                            try:
-                                os.kill(p.pid, signal.SIGKILL)
-                                logging.info("Killed %s" % details)
-                            except:
-                                logging.warning("Couldn't kill %s" % details)
         
         logging.debug("Sleeping...")
         sleep(polling_interval)
 
 
+def do_kill(pid, details, force_kill):
+    if not force_kill:
+        logging.info("Would kill %s" % details)
+    else:
+        try:
+            os.kill(pid, signal.SIGTERM)
+            logging.info("Killed %s" % details)
+        except:
+            try:
+                os.kill(pid, signal.SIGKILL)
+                logging.info("Killed %s" % details)
+            except:
+                logging.warning("Couldn't kill %s" % details)
+    

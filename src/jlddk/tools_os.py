@@ -10,7 +10,6 @@ from pyfnc import patterned, pattern, partial
 
 def getsubdirs(path, max_entries=None):
     """
-    >>> getsubdirs("/tmp")
     """
     try:
         paths=os.listdir(path)
@@ -336,8 +335,29 @@ def simple_popen(path_script, env={}):
     new_env.update(env)
     return subprocess.Popen(path_script, env=new_env)
 
+
+def split_all_ext(path):
+    return path.split(".")[0]
+
+
+def gen_dir_walk(start_path, target_level=1, dobelow=False):
+    """
+    Walks the directories 'target_level' down the 'start_path'
     
+    >>> g=gen_dir_walk("/tmp/test", target_level=2, dobelow=True)
+    >>> for d in g:
+    ...    print d
+    """
+    start_level=len(start_path.split(os.path.sep))
+    abs_target_level=start_level+target_level
     
+    for root, _dirs, _files in os.walk(start_path):
+        
+        for _dir in _dirs:
+            abs_dir=os.path.join(root, _dir)
+            current_level=len(abs_dir.split(os.path.sep))
+            if current_level==abs_target_level or (dobelow and current_level>abs_target_level):
+                    yield abs_dir
 
 if __name__=="__main__":
     import doctest

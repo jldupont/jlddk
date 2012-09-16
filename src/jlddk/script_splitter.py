@@ -140,7 +140,7 @@ def _get_files(wdir, file_input_pattern):
         files=filter(os.path.isfile, files)
         logging.debug("Got: %s file(s) in selected dir" % len(files))
     except:
-        raise ExpWarning("Can't glob files...")
+        raise ExpWarning("Can't glob files for pattern: %s" % file_input_pattern)
     return files
     
 

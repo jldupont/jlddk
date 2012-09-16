@@ -51,7 +51,7 @@ def main():
         parser.add_argument('-p',    dest='poll_interval', type=int,  help="Polling interval (seconds)", default=30)
         
         parser.add_argument('-oext', dest='file_output_ext', type=str,  help="File extension for output files", default="")
-        parser.add_argument('-ipat', dest='file_input_pattern',  type=str,  nargs="+", help="Pattern for input files", default="*")
+        parser.add_argument('-ipat', dest='file_input_patterns',  type=str,  nargs="+", help="Pattern for input files", default="*")
         
         from jlddk.script_splitter import run
         from jlddk.tools_sys import process_command_line

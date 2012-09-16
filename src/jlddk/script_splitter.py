@@ -13,7 +13,7 @@ def run(
         path_dest=None
         ,path_src=None
         ,file_output_ext=None
-        ,file_input_pattern=None
+        ,file_input_patterns=None
         ,poll_interval=None
         ,start_of_file=None
         ,delete_source_dir=False
@@ -91,12 +91,15 @@ def run(
                 wdir=os.path.join(spath, fdir)
                 logging.debug("Working on path: %s" % wdir)
                 
-                try:
-                    files=glob.glob(wdir+os.path.sep+file_input_pattern)
-                    files=filter(os.path.isfile, files)
-                    logging.debug("Got: %s file(s) in selected dir" % len(files))
-                except:
-                    raise ExpWarning("Can't glob files...")
+
+                if type(file_input_patterns)==type([]):
+                    files=[]                    
+                    for file_input_pattern in file_input_patterns:
+                        batch= _get_files(wdir, file_input_pattern)
+                        files.extend(batch)
+                else:
+                    files=_get_files(wdir, file_input_patterns)
+                    
                 
                 if files==[]:
                     logging.debug("No files in %s... skipping to next" % fdir)
@@ -130,6 +133,16 @@ def run(
         logging.debug("Sleeping for %s seconds..." % poll_interval)
         sleep(poll_interval)    
         
+        
+def _get_files(wdir, file_input_pattern):
+    try:
+        files=glob.glob(wdir+os.path.sep+file_input_pattern)
+        files=filter(os.path.isfile, files)
+        logging.debug("Got: %s file(s) in selected dir" % len(files))
+    except:
+        raise ExpWarning("Can't glob files...")
+    return files
+    
 
 def process(dpath, _file, start_of_file, file_output_ext):
     

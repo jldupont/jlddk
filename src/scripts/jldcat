@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.2"
+__version__="0.3"
 import os, sys, argparse
 op=os.path
 
@@ -32,6 +32,7 @@ def main():
         parser.add_argument('-sp',   dest='path_source',  type=str, help="Source path", required=True)
         parser.add_argument('-cd',   dest='check_done',   action="store_true", help="Check '.done' file")
         parser.add_argument('-dp',   dest='path_done',    type=str, help="Path for 'done' files")
+        parser.add_argument('-iext', dest='input_ext',    type=str, help="Input extension, default to all", default="*")
         
         parser.add_argument('-gd',   dest='gen_done',     action="store_true", help="Generate '.done' file")
         parser.add_argument('-if',   dest='ignore_fault', action="store_true", help="Ignore fault")

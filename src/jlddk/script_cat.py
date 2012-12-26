@@ -16,7 +16,8 @@ def run(path_source=None,
         gen_done=None,  
         ignore_fault=False,
         verbose=False,
-        rm_ext=False
+        rm_ext=False,
+        input_ext=None
         ,**_
         ):
     
@@ -41,9 +42,8 @@ def run(path_source=None,
         except:
             raise Exception("Can't resolve path")
         
-
     try:    
-        files=glob.glob(os.path.join(spath, "*"))
+        files=glob.glob(os.path.join(spath, "*."+input_ext))
     except:
         raise Exception("Can't fetch files")
     

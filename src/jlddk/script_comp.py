@@ -4,7 +4,7 @@
 """
 import logging, sys, json, os
 from time import sleep
-from tools_os import get_root_files
+from tools_os import get_root_files, mkdir_p
 from tools_os import resolve_path
 from tools_func import doOnTransition, transition_manager
 from tools_misc import check_if_ok
@@ -48,9 +48,15 @@ def run(primary_path=None, compare_path=None,
     if not code.startswith("ok"):
         raise Exception("can't resolve primary path '%s'" % primary_path)
     
+    logging.info("Creating (if necessary) primary path: %s" % primary_path)
+    mkdir_p(primary_path)
+    
     code, compare_path=resolve_path(compare_path)
     if not code.startswith("ok"):
         raise Exception("can't resolve compare path '%s'" % compare_path)
+
+    logging.info("Creating (if necessary) compare path: %s" % compare_path)
+    mkdir_p(compare_path)
             
     if wait_status:
         status_path=os.path.join(primary_path, status_filename)

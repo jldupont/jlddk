@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.3"
+__version__="0.4"
 import os, sys, argparse
 op=os.path
 
@@ -35,9 +35,12 @@ def main():
         import jlddk.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
-        parser.add_argument('-tp',  dest='topic_name',    type=str, help="Topic name", default=DEFAULTS["topic_name"])
+        parser.add_argument('-tp',  dest='topic_name',             type=str,            help="Topic name", default=DEFAULTS["topic_name"])
         parser.add_argument('-smm', dest='separate_msg_marker',    action="store_true", help="Send separate message for each marker", default=False)
         parser.add_argument('-ssm', dest='suppress_second_marker', action="store_true", help="Suppress second marker", default=False)
+        
+        parser.add_argument('-sc',  dest='seconds_count',          type=int,             help="Mode: Interval counter (seconds)", default=None)
+        parser.add_argument('-ts',  dest='tick_at_start',          action="store_true",  help="Tick at start", default=False)
         
         from jlddk.script_clock import run
         from jlddk.tools_sys import process_command_line

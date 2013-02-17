@@ -87,7 +87,7 @@ def mode_default(d, suppress_second_marker, separate_msg_marker):
     if suppress_second_marker:
         if not d["min_marker"] and not d["hour_marker"] and not d["day_marker"]:
             sleep(ONE_SECOND)
-            continue
+            return d
            
     try:
         stdout(d)

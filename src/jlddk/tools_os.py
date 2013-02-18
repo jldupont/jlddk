@@ -9,8 +9,6 @@ from pyfnc import patterned, pattern, partial
 
 
 def getsubdirs(path, max_entries=None):
-    """
-    """
     try:
         paths=os.listdir(path)
         if max_entries is not None:
@@ -158,7 +156,6 @@ def filter_files_by_ext(criteria, extlist, files):
     []
     """
 
-    
 def get_root_files(src_path, strip_dirname=False, max_entries=None):
     """
     Retrieve files from the root of src_path

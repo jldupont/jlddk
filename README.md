@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.7.32: added 'jldbolus'
+
 0.7.24: extended 'ipat' option on jldsplitter
 
 0.7.22: fixed pclean: caching of ppid value in psutil package caused malfunction

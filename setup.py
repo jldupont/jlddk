@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.7.31"
+__version__ ="0.7.32"
 
 
 from distutils.core import setup
@@ -22,6 +22,7 @@ Each 'robot' is implemented with logging on stderr and processing result is outp
 Robots
 ------
 
+* jldbolus: move processed subdirectories 
 * jldstrpkg: stdin --> formatter --> stdout
 * jldwebscraper : extract anchor links from a web page
 * jldfilter : filter stdin through a Python module, output on stdout

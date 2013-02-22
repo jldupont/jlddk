@@ -3,9 +3,22 @@
     @author: jldupont
 """
 import os, errno, tempfile, types, shutil
-import subprocess
+import subprocess, logging
 
 from pyfnc import patterned, pattern, partial
+
+def handle_path(path):
+    logging.info("Resolving path: %s" % path)
+    code, path=resolve_path(path)
+    if not code.startswith("ok"):
+        raise Exception("Can't resolve path '%s'" % path)
+    
+    logging.info("Creating (if necessary) path: %s" % path)
+    code, _=mkdir_p(path)
+    if not code.startswith("ok"):
+        raise Exception("Can't create path '%s'" % path)
+    
+    return path
 
 
 def getsubdirs(path, max_entries=None):

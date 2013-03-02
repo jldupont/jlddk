@@ -2,7 +2,7 @@
     Created on 2012-01-28
     @author: jldupont
 """
-import os,sys,logging, hashlib, random
+import os,sys,logging, hashlib
 from logging.handlers import SysLogHandler
 
 def setloglevel(level_name):

@@ -22,6 +22,10 @@ def handle_path(path):
 
 
 def getsubdirs(path, max_entries=None):
+    """
+    >>> print getsubdirs("/tmp")
+    ...
+    """
     try:
         paths=os.listdir(path)
         if max_entries is not None:
@@ -172,6 +176,9 @@ def filter_files_by_ext(criteria, extlist, files):
 def get_root_files(src_path, strip_dirname=False, max_entries=None):
     """
     Retrieve files from the root of src_path
+    
+    @return absolute paths
+    
     >> get_root_files("/tmp")
     
     >> get_root_files("/tmp", strip_dirname=True)

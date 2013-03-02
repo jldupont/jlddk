@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+"""
+    jlddirzip - archive directory files automatically
+
+    @author: Jean-Lou Dupont
+"""
+__version__="0.1"
+import os, sys, argparse
+op=os.path
+
+try:
+    if os.environ.get("DEVMODE", False):
+        raise
+    
+    import jlddk #@UnusedImport
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jlddk #@UnusedImport
+
+########################################################################
+
+DESC="""Archive directories automatically - v%s
+
+    1) Regular check at '-p' interval in '-sp' path for subdirectories containing files
+    2) Generate zip archive of each subdir, use a '-tp' directory during this process
+    3) Move archive to '-dp' when finished
+    
+    The name of the archive is ':name_of_source_subdir.zip'
+""" % __version__
+DEFAULTS={
+          }
+
+def main():
+    try:
+        import jlddk.do_setup  #@UnusedImport
+        import logging
+        import jlddk.do_checks #@UnusedImport
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
+             
+        parser.add_argument('-p',   dest='polling',   type=int, help="Polling interval (seconds)", default=30 )
+        
+        parser.add_argument('-sp',  dest='dir_src',  type=str, help="Source directory",      required=True)
+        parser.add_argument('-dp',  dest='dir_dst',  type=str, help="Destination directory", required=True)
+        parser.add_argument('-tp',  dest='dir_tmp',  type=str, help="Temporary directory",   default="/tmp")
+        
+        parser.add_argument('-ee',  dest='exit_error',    action="store_true", help="Exit on error",        default=False)
+        parser.add_argument('-ds',  dest='delete_source', action="store_true", help="Delete source subdir", default=False)
+        
+        from jlddk.script_dirzip import run
+        from jlddk.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

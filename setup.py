@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.7.34"
+__version__ ="0.7.35"
 
 
 from distutils.core import setup
@@ -63,6 +63,8 @@ setup(name=         'jlddk',
       scripts=      ['src/scripts/jldwebscraper',
                      'src/scripts/jldfilter',
                      'src/scripts/jldwebdl',
+                     'src/scripts/jldbolus',
+                     'src/scripts/jlddirzip',
                      'src/scripts/jldcat',
                      'src/scripts/jlduncat',
                      'src/scripts/jldjsoncat',

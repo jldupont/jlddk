@@ -151,9 +151,13 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename, des
         primary_files=filter(filtre(exts), primary_files)
         compare_files=filter(filtre(exts), compare_files)
     
+    def _mapper(path):
+        bn=os.path.basename(path)
+        return os.path.splitext(bn)[0]
+    
     if just_basename:
-        pfiles=map(os.path.basename, primary_files)
-        cfiles=map(os.path.basename, compare_files)
+        pfiles=map(_mapper, primary_files)
+        cfiles=map(_mapper, compare_files)
     else:
         pfiles=primary_files
         cfiles=compare_files

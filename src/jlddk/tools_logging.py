@@ -5,6 +5,12 @@
 import os,sys,logging, hashlib
 from logging.handlers import SysLogHandler
 
+def ilog(path):
+    logging.info("Files accessible on path: %s" % path)
+    
+def wlog(path):
+    logging.warning("Can't retrieve files from path: %s" % path)
+
 def setloglevel(level_name):
     """
     >>> import logging

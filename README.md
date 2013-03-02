@@ -4,6 +4,8 @@ For more information, visit http://www.systemical.com/doc/opensource/jlddk
 History
 =======
 
+0.7.36: added 'dp' option to jldcomp
+
 0.7.34: added 'jlddirzip'
 
 0.7.32: added 'jldbolus'

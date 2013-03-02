@@ -2,37 +2,22 @@
     Created on 2012-01-27
     @author: jldupont
 """
-import logging, sys, json, os
+import logging, os
 from time import sleep
-from tools_os import get_root_files, mkdir_p
-from tools_os import resolve_path
+from tools_os import get_root_files, mkdir_p, rmdir
+from tools_os import resolve_path, touch
 from tools_func import doOnTransition, transition_manager
 from tools_misc import check_if_ok
 from tools_func import check_transition
-from tools_sys import BrokenPipe
+from tools_sys import stdoutf, stdoutj, stdout
+from tools_logging import ilog, wlog
 
 from pyfnc import patterned, pattern, partial
 
-def ilog(path):
-    logging.info("Files accessible on path: %s" % path)
-    
-def wlog(path):
-    logging.warning("Can't retrieve files from path: %s" % path)
 
-def stdoutf():
-    sys.stdout.flush()
-    
-def stdoutj(jo):
-    try:    sys.stdout.write(json.dumps(jo)+"\n")
-    except: 
-        raise BrokenPipe("...broken pipe")
-    
-def stdout(m):
-    try:    sys.stdout.write(m+"\n")
-    except: 
-        raise BrokenPipe("...broken pipe")
 
 def run(primary_path=None, compare_path=None, 
+        dest_path=None,
         status_filename=None, check_path=None
         ,just_basename=None
         ,topic_name=None
@@ -43,6 +28,16 @@ def run(primary_path=None, compare_path=None,
 
     if check_path is not None:
         ct=check_transition()
+
+    if dest_path:
+        code, dest_path=resolve_path(dest_path)
+        if not code.startswith("ok"):
+            raise Exception("can't destination path '%s'" % dest_path)
+        
+        logging.info("Creating (if necessary) destination path: %s" % dest_path)
+        code, msg=mkdir_p(dest_path)
+        if code!="ok":
+            raise Exception("Can't create path: %s" % dest_path)
 
     code, primary_path=resolve_path(primary_path)
     if not code.startswith("ok"):
@@ -68,8 +63,9 @@ def run(primary_path=None, compare_path=None,
     ctx={
           "just_zppp": just_zppp
          ,"just_ppzp": just_ppzp
-         ,"just_com": just_com
+         ,"just_com":  just_com
          ,"just_list": just_zppp or just_ppzp or just_com
+         
          ,"pp": primary_path
          ,"zp": compare_path
          ,"sp": status_path
@@ -88,7 +84,7 @@ def run(primary_path=None, compare_path=None,
     
     ppid=os.getppid()        
     logging.info("Process pid: %s" % os.getpid())
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Parent  pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
         if os.getppid()!=ppid:
@@ -110,7 +106,7 @@ def run(primary_path=None, compare_path=None,
 
         if exists:            
             code, msg=check_if_ok(status_path, default="ok")
-            maybe_process(ctx, code, msg, primary_path, compare_path, just_basename)
+            maybe_process(ctx, code, msg, primary_path, compare_path, just_basename, dest_path)
         
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
@@ -125,8 +121,16 @@ def filtre(exts):
 
 
 @pattern(dict, "ok", any, str, str, any)
-def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
+def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename, dest_path):
     
+    if dest_path:
+        logging.debug("Emptying dest path: %s" % dest_path)
+        rmdir(dest_path)
+        
+        code, _msg=mkdir_p(dest_path)
+        if code!="ok":
+            raise Exception("Can't create path: %s" % dest_path)
+        
     ### log rate limiter helper -- need to update status in context 'ctx'
     doOnTransition(ctx, "status_file.contents", "down", True, None)
     
@@ -159,8 +163,6 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
         setcf=set(cfiles)
         common=setpf.intersection(setcf)
         
-        
-        
         diff={
                "pp":     primary_path
               ,"zp":     compare_path
@@ -170,14 +172,16 @@ def maybe_process_ok(ctx, _ok, _, primary_path, compare_path, just_basename):
               }
         
         topic_name=ctx["topic_name"]
+        
         if topic_name is not None:
             diff["topic"]=topic_name
         
         if ctx["just_list"]:
-            doout(ctx, diff)
+            doout(ctx, diff, dest_path)
         else:
             stdoutj(diff)
             stdoutf()
+            
     except Exception, e:
         logging.error("Can't compute diff between paths: %s" % str(e))
 
@@ -196,22 +200,30 @@ def maybe_process_nok(ctx, _nok, _msg, _x, _y, _bn):
 def maybe_process(ctx, code, msg, primary_path, compare_path, just_basename): pass
 
 
-def doout(ctx, listes):
+def doout(ctx, listes, dest_path):
 
     if ctx["just_zppp"]:
         for e in listes["zp-pp"]:
-            stdout(e)
-            stdoutf()
+            real_doout(dest_path, e)
 
     if ctx["just_ppzp"]:
         for e in listes["pp-zp"]:
-            stdout(e)
-            stdoutf()
+            real_doout(dest_path, e)            
     
     if ctx["just_com"]:
         for e in listes["common"]:
-            stdout(e)
-            stdoutf()
-
+            real_doout(dest_path, e)
+            
+            
+def real_doout(dest_path, element):
     
+    if dest_path is None:
+        stdout(element)
+        stdoutf()
+    else:
+        dfile=os.path.join(dest_path, element)
+        code, msg=touch(dfile)
+        if code!="ok":
+            logging.warning("Can't touch file '%s'  (%s)" % (dfile, msg))
+        
 

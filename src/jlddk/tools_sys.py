@@ -12,6 +12,19 @@ from jlddk.tools_logging import setloglevel, enable_duplicates_filter, setup_sys
 class BrokenPipe(Exception): pass
 
 
+def stdoutf():
+    sys.stdout.flush()
+    
+def stdoutj(jo):
+    try:    sys.stdout.write(json.dumps(jo)+"\n")
+    except: 
+        raise BrokenPipe("...broken pipe")
+    
+def stdout(m):
+    try:    sys.stdout.write(m+"\n")
+    except: 
+        raise BrokenPipe("...broken pipe")
+
 def process_command_line(parser):
     parser.add_argument('-lc',  dest="logconfig", type=str,  help="Logging configuration file", choices=["debug", "info", "warning", "error"])
     parser.add_argument('-ll',  dest='log_level',     type=str,            help="Log Level", default="info", choices=["debug", "info", "warning", "error"])
